@@ -16,8 +16,8 @@ on:
           - preview
 
 env:
-  flutter_version: '3.24.5'
-  dart_version: '3.5.4'
+  flutter_version: '3.27.0'
+  dart_version: '3.6.0'
 
 jobs:
   # Pre-flight checks
