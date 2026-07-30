@@ -21,8 +21,8 @@ This document provides comprehensive instructions for building and releasing the
 
 ### Required Tools
 
-- **Flutter SDK** 3.24.5 (compatible with Dart 3.5.4)
-- **Dart SDK** 3.5.4
+- **Flutter SDK** 3.44.0 (compatible with Dart 3.6.0)
+- **Dart SDK** 3.6.0
 - **Android SDK** (latest stable)
 - **Java Development Kit (JDK)** 17 or higher
 
@@ -32,6 +32,14 @@ Ensure the following are in your PATH:
 - `flutter`
 - `dart`
 - `java` (or JAVA_HOME is set)
+
+### Verify Installation
+
+```bash
+flutter --version
+dart --version
+flutter doctor
+```
 
 ---
 
@@ -50,7 +58,15 @@ cd rpg-system
 flutter pub get
 ```
 
-### 3. Configure Firebase (Optional for Development)
+### 3. Run Code Generation
+
+This project uses code generation for models and providers:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
+### 4. Configure Firebase (Optional for Development)
 
 1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
 2. Add Android and iOS apps to your project
@@ -59,7 +75,7 @@ flutter pub get
    - `ios/Runner/GoogleService-Info.plist` for iOS
 4. Enable Authentication, Firestore, Cloud Messaging, and Storage
 
-### 4. Configure Signing (For Release Builds)
+### 5. Configure Signing (For Release Builds)
 
 Create `android/key.properties`:
 
@@ -112,7 +128,11 @@ Output: `build/web/`
 
 ## Code Generation
 
-This project uses code generation for immutable models and Riverpod providers.
+This project uses code generation for:
+- **Freezed** - Immutable data classes
+- **Riverpod** - State management providers
+- **JSON Serialization** - JSON parsing
+- **Drift** - Local database
 
 ### Run Code Generation
 
@@ -174,6 +194,7 @@ flutter test --tag integration
 |----------|------|-------------|
 | CI | `ci.yml` | Runs on every push and PR |
 | Android Release | `android-release.yml` | Builds release APK and AAB |
+| CodeQL | `codeql.yml` | Security analysis |
 
 ### Triggering the Release Workflow
 
@@ -192,10 +213,16 @@ The release workflow automatically triggers on push to the `main` branch.
 ### Workflow Steps
 
 1. **Pre-flight Checks** - Code generation verification
-2. **Analyze** - Flutter static analysis
+2. **Analyze** - Flutter static analysis (fails on errors)
 3. **Test** - Unit and widget tests
 4. **Build APK** - Release APK build
 5. **Build AAB** - App Bundle for Play Store
+
+### Workflow Features
+
+- **Caching**: Flutter packages and Gradle caches are preserved
+- **Code Signing**: Automatically configured when secrets are available
+- **Parallel Builds**: APK and AAB built simultaneously after validation
 
 ### Downloading Artifacts
 
@@ -203,6 +230,14 @@ The release workflow automatically triggers on push to the `main` branch.
 2. Click on the job (e.g., "Build Release APK")
 3. Scroll to "Artifacts" section
 4. Download the artifact
+
+### Artifact Names
+
+| Artifact | Name | Retention |
+|----------|------|-----------|
+| Release APK | `rpg-system-release-apk` | 30 days |
+| Release AAB | `rpg-system-release-aab` | 30 days |
+| Preview APK | `rpg-system-preview-apk` | 7 days |
 
 ---
 
@@ -250,7 +285,7 @@ flutter version bump build
 
 ## Signing Configuration
 
-### Creating a Keystore
+### Creating a New Keystore
 
 If you don't have a keystore, create one:
 
@@ -264,7 +299,7 @@ keytool -genkey -v -storetype JKS \
   -dname "CN=Your Name, O=Your Organization, C=US"
 ```
 
-### Converting to Base64 (for GitHub Secrets)
+### Converting Keystore to Base64 (for GitHub Secrets)
 
 ```bash
 base64 -w 0 android/app/release.jks
@@ -287,21 +322,34 @@ storeFile=release.jks
 - Store them securely (e.g., password manager, secure cloud storage)
 - If lost, you'll need to create a new keystore and lose Play Store updates
 
+### Important Notes
+
+- **App Bundle signing**: AAB files for Play Store require special signing configuration
+- **Update existing app**: You must use the same keystore as previous releases
+- **Lost keystore**: Cannot update published apps; must create new listing
+
 ---
 
 ## Required GitHub Secrets
 
 Configure these secrets in your GitHub repository under **Settings > Secrets and variables > Actions**.
 
-| Secret Name | Description | Required for Release |
-|-------------|-------------|---------------------|
-| `ANDROID_KEYSTORE_BASE64` | Base64-encoded keystore file | Yes |
-| `ANDROID_KEYSTORE_PASSWORD` | Password for the keystore | Yes |
-| `ANDROID_KEY_ALIAS` | Alias name of the signing key | Yes |
-| `ANDROID_KEY_PASSWORD` | Password for the signing key | Yes |
-| `IOS_P12_BASE64` | Base64-encoded iOS signing certificate | iOS only |
-| `IOS_P12_PASSWORD` | Password for iOS certificate | iOS only |
-| `IOS_PROVISIONING_PROFILE` | Base64-encoded provisioning profile | iOS only |
+### Android Signing Secrets
+
+| Secret Name | Description | Required |
+|-------------|-------------|----------|
+| `ANDROID_KEYSTORE_BASE64` | Base64-encoded keystore file | For signed release |
+| `ANDROID_KEYSTORE_PASSWORD` | Password for the keystore | For signed release |
+| `ANDROID_KEY_ALIAS` | Alias name of the signing key | For signed release |
+| `ANDROID_KEY_PASSWORD` | Password for the signing key | For signed release |
+
+### iOS Signing Secrets (for CI only)
+
+| Secret Name | Description | Required |
+|-------------|-------------|----------|
+| `IOS_P12_BASE64` | Base64-encoded iOS signing certificate | For iOS |
+| `IOS_P12_PASSWORD` | Password for iOS certificate | For iOS |
+| `IOS_PROVISIONING_PROFILE` | Base64-encoded provisioning profile | For iOS |
 
 ### Adding Secrets to GitHub
 
@@ -311,9 +359,13 @@ Configure these secrets in your GitHub repository under **Settings > Secrets and
 4. Enter name and value
 5. Click **Add secret**
 
-### For Debug/CI Builds Without Signing
+### Without Signing Secrets
 
-The workflow is configured to fall back to debug signing when secrets are not configured. This is useful for:
+The workflow is configured to fall back to debug signing when secrets are not configured. This produces:
+- Unsigned APK/AAB for testing
+- Debug-signed builds (not suitable for Play Store)
+
+This is useful for:
 - Testing CI/CD pipeline
 - Development builds
 - Pull request verification
@@ -440,6 +492,31 @@ org.gradle.jvmargs=-Xmx8G -XX:MaxMetaspaceSize=4G
 
 ---
 
+## Project Configuration Summary
+
+### Android Configuration
+
+| Setting | Value |
+|---------|-------|
+| Application ID | `com.rpgsystem.rpg_system` |
+| Min SDK | 26 (Android 8.0) |
+| Target SDK | Latest Flutter default |
+| Code Shrinking | R8 (full mode) |
+| ProGuard | Enabled for release |
+
+### Build Artifacts
+
+| Type | Path |
+|------|------|
+| Debug APK | `build/app/outputs/flutter-apk/app-debug.apk` |
+| Release APK | `build/app/outputs/flutter-apk/app-release.apk` |
+| App Bundle | `build/app/outputs/bundle/release/app-release.aab` |
+| Keystore | `android/app/release.jks` |
+| Key properties | `android/key.properties` |
+| ProGuard rules | `android/app/proguard-rules.pro` |
+
+---
+
 ## Quick Reference
 
 ### Common Commands
@@ -461,20 +538,18 @@ flutter build appbundle --release
 flutter test
 flutter analyze
 
-# Version bump
-flutter version bump
+# Format
+dart format .
 ```
 
-### File Locations
+### Environment
 
-| File | Location |
-|------|----------|
-| Debug APK | `build/app/outputs/flutter-apk/app-debug.apk` |
-| Release APK | `build/app/outputs/flutter-apk/app-release.apk` |
-| App Bundle | `build/app/outputs/bundle/release/app-release.aab` |
-| Keystore | `android/app/release.jks` |
-| Key properties | `android/key.properties` |
-| ProGuard rules | `android/app/proguard-rules.pro` |
+| Variable | Value |
+|----------|-------|
+| Flutter Version | 3.44.0 |
+| Dart Version | 3.6.0 |
+| Java Version | 17 |
+| Min Android SDK | 26 |
 
 ---
 

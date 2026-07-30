@@ -19,6 +19,10 @@ env:
   flutter_version: '3.44.0'
   dart_version: '3.6.0'
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   # Pre-flight checks
   preflight:
@@ -90,16 +94,7 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Flutter analyze
-        run: |
-          set +e  # Don't fail on non-zero exit
-          flutter analyze 2>&1 | tee analyze_output.txt
-          # Check for actual errors (not warnings or info)
-          if grep -q "^   error •" analyze_output.txt; then
-            echo "ERROR: Found critical errors in analysis"
-            exit 1
-          fi
-          echo "Analysis complete (info/warnings are non-blocking)"
-          exit 0
+        run: flutter analyze
 
   # Unit Tests
   test:
@@ -181,21 +176,25 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Decode Keystore
-        if: vars.ANDROID_KEYSTORE_BASE64 != ''
+      - name: Configure signing
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.jks
-          cat >> android/key.properties << EOF
-          storePassword=$KEYSTORE_PASSWORD
-          keyPassword=$KEY_PASSWORD
-          keyAlias=$KEY_ALIAS
-          storeFile=release.jks
-          EOF
+          if [[ -n "$KEYSTORE_BASE64" && -n "$KEYSTORE_PASSWORD" && -n "$KEY_ALIAS" && -n "$KEY_PASSWORD" ]]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.jks
+            cat > android/key.properties << EOF
+            storePassword=$KEYSTORE_PASSWORD
+            keyPassword=$KEY_PASSWORD
+            keyAlias=$KEY_ALIAS
+            storeFile=release.jks
+            EOF
+            echo "Signing configured for release build"
+          else
+            echo "Signing secrets not configured - build will use debug signing"
+          fi
 
       - name: Build Release APK
         run: flutter build apk --release
@@ -246,21 +245,25 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Decode Keystore
-        if: vars.ANDROID_KEYSTORE_BASE64 != ''
+      - name: Configure signing
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.jks
-          cat >> android/key.properties << EOF
-          storePassword=$KEYSTORE_PASSWORD
-          keyPassword=$KEY_PASSWORD
-          keyAlias=$KEY_ALIAS
-          storeFile=release.jks
-          EOF
+          if [[ -n "$KEYSTORE_BASE64" && -n "$KEYSTORE_PASSWORD" && -n "$KEY_ALIAS" && -n "$KEY_PASSWORD" ]]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.jks
+            cat > android/key.properties << EOF
+            storePassword=$KEYSTORE_PASSWORD
+            keyPassword=$KEY_PASSWORD
+            keyAlias=$KEY_ALIAS
+            storeFile=release.jks
+            EOF
+            echo "Signing configured for release build"
+          else
+            echo "Signing secrets not configured - build will use debug signing"
+          fi
 
       - name: Build Release AAB
         run: flutter build appbundle --release
@@ -311,21 +314,25 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Decode Keystore
-        if: vars.ANDROID_KEYSTORE_BASE64 != ''
+      - name: Configure signing
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.jks
-          cat >> android/key.properties << EOF
-          storePassword=$KEYSTORE_PASSWORD
-          keyPassword=$KEY_PASSWORD
-          keyAlias=$KEY_ALIAS
-          storeFile=release.jks
-          EOF
+          if [[ -n "$KEYSTORE_BASE64" && -n "$KEYSTORE_PASSWORD" && -n "$KEY_ALIAS" && -n "$KEY_PASSWORD" ]]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.jks
+            cat > android/key.properties << EOF
+            storePassword=$KEYSTORE_PASSWORD
+            keyPassword=$KEY_PASSWORD
+            keyAlias=$KEY_ALIAS
+            storeFile=release.jks
+            EOF
+            echo "Signing configured for release build"
+          else
+            echo "Signing secrets not configured - build will use debug signing"
+          fi
 
       - name: Build Preview APK
         run: flutter build apk --release
