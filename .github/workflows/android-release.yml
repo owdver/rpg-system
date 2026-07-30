@@ -91,15 +91,15 @@ jobs:
 
       - name: Flutter analyze
         run: |
-          result=$(flutter analyze 2>&1)
-          echo "$result"
-          if echo "$result" | grep -q "^   error •"; then
+          set +e  # Don't fail on non-zero exit
+          flutter analyze 2>&1 | tee analyze_output.txt
+          # Check for actual errors (not warnings or info)
+          if grep -q "^   error •" analyze_output.txt; then
             echo "ERROR: Found critical errors in analysis"
             exit 1
-          else
-            echo "Analysis complete (info/warnings are non-blocking)"
-            exit 0
           fi
+          echo "Analysis complete (info/warnings are non-blocking)"
+          exit 0
 
   # Unit Tests
   test:
