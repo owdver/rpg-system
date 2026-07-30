@@ -48,7 +48,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Initialize authentication state.
   Future<void> initialize() async {
     state = state.copyWith(isLoading: true);
-    
+
     try {
       final user = await _authRepository.getCurrentUser();
       if (user != null) {
@@ -70,7 +70,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Sign in with email and password.
   Future<bool> signInWithEmail(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       final user = await _authRepository.signInWithEmail(email, password);
       state = AuthState(
@@ -90,7 +90,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Sign in with Google.
   Future<bool> signInWithGoogle() async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       final user = await _authRepository.signInWithGoogle();
       state = AuthState(
@@ -114,7 +114,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     String displayName,
   ) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       final user = await _authRepository.signUpWithEmail(
         email,
@@ -138,7 +138,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Sign out.
   Future<void> signOut() async {
     state = state.copyWith(isLoading: true);
-    
+
     try {
       await _authRepository.signOut();
       state = const AuthState(status: AuthStatus.unauthenticated);
@@ -153,7 +153,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Update user profile.
   Future<bool> updateProfile(UserProfile profile) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     try {
       final updatedProfile = await _authRepository.updateProfile(profile);
       state = AuthState(
@@ -177,7 +177,8 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 /// Provider for the auth state notifier.
-final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
+final authNotifierProvider =
+    StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   return AuthNotifier(repository);
 });

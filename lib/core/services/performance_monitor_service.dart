@@ -66,17 +66,25 @@ class PerformanceMonitor {
       );
     }
 
-    final buildTimes = _frameMetrics.map((m) => m.buildDuration.inMicroseconds / 1000).toList()
+    final buildTimes = _frameMetrics
+        .map((m) => m.buildDuration.inMicroseconds / 1000)
+        .toList()
       ..sort();
-    final rasterTimes = _frameMetrics.map((m) => m.rasterDuration.inMicroseconds / 1000).toList()
+    final rasterTimes = _frameMetrics
+        .map((m) => m.rasterDuration.inMicroseconds / 1000)
+        .toList()
       ..sort();
 
     return FrameStats(
       avgBuildMs: buildTimes.reduce((a, b) => a + b) / buildTimes.length,
       avgRasterMs: rasterTimes.reduce((a, b) => a + b) / rasterTimes.length,
       avgFps: averageFps,
-      minFps: _frameMetrics.isEmpty ? 0 : _calculateFps(buildTimes.first + rasterTimes.first),
-      maxFps: _frameMetrics.isEmpty ? 0 : _calculateFps(buildTimes.last + rasterTimes.last),
+      minFps: _frameMetrics.isEmpty
+          ? 0
+          : _calculateFps(buildTimes.first + rasterTimes.first),
+      maxFps: _frameMetrics.isEmpty
+          ? 0
+          : _calculateFps(buildTimes.last + rasterTimes.last),
       p95BuildMs: _percentile(buildTimes, 95),
       p95RasterMs: _percentile(rasterTimes, 95),
     );

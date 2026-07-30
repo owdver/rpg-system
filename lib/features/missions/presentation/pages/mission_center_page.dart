@@ -76,7 +76,8 @@ class _MissionCenterPageState extends ConsumerState<MissionCenterPage>
 
                   // Tabs
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                       color: AppColors.surfaceGlass,
@@ -86,7 +87,8 @@ class _MissionCenterPageState extends ConsumerState<MissionCenterPage>
                       isScrollable: true,
                       indicatorSize: TabBarIndicatorSize.tab,
                       indicator: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusMd),
                         gradient: AppColors.energyActive,
                       ),
                       labelColor: AppColors.backgroundPrimary,
@@ -113,27 +115,33 @@ class _MissionCenterPageState extends ConsumerState<MissionCenterPage>
                       controller: _tabController,
                       children: [
                         _MissionList(
-                          missions: _getByCategory(missions, MissionCategory.daily),
+                          missions:
+                              _getByCategory(missions, MissionCategory.daily),
                           emptyMessage: 'No daily missions available',
                         ),
                         _MissionList(
-                          missions: _getByCategory(missions, MissionCategory.weekly),
+                          missions:
+                              _getByCategory(missions, MissionCategory.weekly),
                           emptyMessage: 'No weekly missions available',
                         ),
                         _MissionList(
-                          missions: _getByCategory(missions, MissionCategory.monthly),
+                          missions:
+                              _getByCategory(missions, MissionCategory.monthly),
                           emptyMessage: 'No monthly missions available',
                         ),
                         _MissionList(
-                          missions: _getByCategory(missions, MissionCategory.recovery),
+                          missions: _getByCategory(
+                              missions, MissionCategory.recovery),
                           emptyMessage: 'No recovery missions available',
                         ),
                         _MissionList(
-                          missions: _getByCategory(missions, MissionCategory.boss),
+                          missions:
+                              _getByCategory(missions, MissionCategory.boss),
                           emptyMessage: 'No boss missions available',
                         ),
                         _MissionList(
-                          missions: _getByCategory(missions, MissionCategory.seasonal),
+                          missions: _getByCategory(
+                              missions, MissionCategory.seasonal),
                           emptyMessage: 'No seasonal missions available',
                         ),
                       ],
@@ -153,7 +161,8 @@ class _MissionCenterPageState extends ConsumerState<MissionCenterPage>
 
     // Filter completed
     if (!_showCompleted) {
-      filtered = filtered.where((m) => m.status != MissionStatus.completed).toList();
+      filtered =
+          filtered.where((m) => m.status != MissionStatus.completed).toList();
     }
 
     // Sort
@@ -167,7 +176,8 @@ class _MissionCenterPageState extends ConsumerState<MissionCenterPage>
         });
         break;
       case MissionSortOption.difficulty:
-        filtered.sort((a, b) => b.difficulty.index.compareTo(a.difficulty.index));
+        filtered
+            .sort((a, b) => b.difficulty.index.compareTo(a.difficulty.index));
         break;
       case MissionSortOption.xpReward:
         filtered.sort((a, b) => b.xpReward.compareTo(a.xpReward));
@@ -180,7 +190,8 @@ class _MissionCenterPageState extends ConsumerState<MissionCenterPage>
     return filtered;
   }
 
-  List<Mission> _getByCategory(List<Mission> missions, MissionCategory category) {
+  List<Mission> _getByCategory(
+      List<Mission> missions, MissionCategory category) {
     return missions.where((m) => m.category == category).toList();
   }
 }
@@ -356,7 +367,8 @@ class _MissionCard extends ConsumerWidget {
                         vertical: AppSpacing.xs,
                       ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                         color: _getDifficultyColor(mission.difficulty)
                             .withOpacity(0.2),
                       ),
@@ -375,7 +387,8 @@ class _MissionCard extends ConsumerWidget {
                         vertical: AppSpacing.xs,
                       ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                         color: AppColors.accentViolet.withOpacity(0.2),
                       ),
                       child: Text(
@@ -635,7 +648,8 @@ class _MissionDetailsSheet extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  ...mission.objectives.map((obj) => _ObjectiveItem(objective: obj)),
+                  ...mission.objectives
+                      .map((obj) => _ObjectiveItem(objective: obj)),
 
                   const SizedBox(height: AppSpacing.xxl),
 
@@ -679,7 +693,8 @@ class _MissionDetailsSheet extends StatelessWidget {
                         foregroundColor: AppColors.backgroundPrimary,
                         padding: const EdgeInsets.all(AppSpacing.md),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusMd),
                         ),
                       ),
                       child: Text(
@@ -721,7 +736,9 @@ class _ObjectiveItem extends StatelessWidget {
                   : AppColors.surfaceGlass,
             ),
             child: Icon(
-              objective.isCompleted ? Icons.check : Icons.radio_button_unchecked,
+              objective.isCompleted
+                  ? Icons.check
+                  : Icons.radio_button_unchecked,
               color: objective.isCompleted
                   ? AppColors.accentSuccess
                   : AppColors.textTertiary,

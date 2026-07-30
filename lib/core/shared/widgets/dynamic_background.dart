@@ -152,8 +152,10 @@ class _GradientOrbPainter extends CustomPainter {
     );
 
     final center3 = Offset(
-      size.width * (0.5 + 0.25 * math.sin((progress + offset + 0.5) * 2 * math.pi)),
-      size.height * (0.4 + 0.3 * math.cos((progress + offset + 0.5) * 2 * math.pi)),
+      size.width *
+          (0.5 + 0.25 * math.sin((progress + offset + 0.5) * 2 * math.pi)),
+      size.height *
+          (0.4 + 0.3 * math.cos((progress + offset + 0.5) * 2 * math.pi)),
     );
 
     // Draw orbs with radial gradients

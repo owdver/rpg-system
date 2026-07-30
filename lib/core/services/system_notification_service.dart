@@ -148,7 +148,8 @@ class SystemNotificationState {
 }
 
 /// System notification notifier for managing messages.
-class SystemNotificationNotifier extends StateNotifier<SystemNotificationState> {
+class SystemNotificationNotifier
+    extends StateNotifier<SystemNotificationState> {
   SystemNotificationNotifier() : super(const SystemNotificationState());
 
   final _messageController = StreamController<SystemMessage>.broadcast();
@@ -161,17 +162,18 @@ class SystemNotificationNotifier extends StateNotifier<SystemNotificationState> 
     final newMessage = message.copyWith(
       timestamp: DateTime.now(),
     );
-    
+
     state = state.copyWith(
       messages: [newMessage, ...state.messages].take(50).toList(),
     );
-    
+
     _messageController.add(newMessage);
     _scheduleCleanup(message);
   }
 
   /// Adds a mission-related message.
-  void addMissionMessage(String title, String body, {SystemMessagePriority priority = SystemMessagePriority.normal}) {
+  void addMissionMessage(String title, String body,
+      {SystemMessagePriority priority = SystemMessagePriority.normal}) {
     addMessage(SystemMessage(
       id: 'mission_${DateTime.now().millisecondsSinceEpoch}',
       title: title,
@@ -183,7 +185,8 @@ class SystemNotificationNotifier extends StateNotifier<SystemNotificationState> 
   }
 
   /// Adds a recovery-related message.
-  void addRecoveryMessage(String title, String body, {SystemMessagePriority priority = SystemMessagePriority.normal}) {
+  void addRecoveryMessage(String title, String body,
+      {SystemMessagePriority priority = SystemMessagePriority.normal}) {
     addMessage(SystemMessage(
       id: 'recovery_${DateTime.now().millisecondsSinceEpoch}',
       title: title,
@@ -195,7 +198,8 @@ class SystemNotificationNotifier extends StateNotifier<SystemNotificationState> 
   }
 
   /// Adds a progress-related message.
-  void addProgressMessage(String title, String body, {SystemMessagePriority priority = SystemMessagePriority.normal}) {
+  void addProgressMessage(String title, String body,
+      {SystemMessagePriority priority = SystemMessagePriority.normal}) {
     addMessage(SystemMessage(
       id: 'progress_${DateTime.now().millisecondsSinceEpoch}',
       title: title,
@@ -308,7 +312,9 @@ final unreadMessageCountProvider = Provider<int>((ref) {
 
 /// Provider for critical messages only.
 final criticalMessagesProvider = Provider<List<SystemMessage>>((ref) {
-  return ref.watch(systemNotificationProvider).messages
+  return ref
+      .watch(systemNotificationProvider)
+      .messages
       .where((m) => m.priority == SystemMessagePriority.critical)
       .toList();
 });

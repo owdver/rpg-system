@@ -144,9 +144,9 @@ class _MissionSection extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.md),
         ...missions.map((mission) => Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.md),
-          child: _MissionCard(mission: mission, isBoss: isBoss),
-        )),
+              padding: const EdgeInsets.only(bottom: AppSpacing.md),
+              child: _MissionCard(mission: mission, isBoss: isBoss),
+            )),
       ],
     );
   }

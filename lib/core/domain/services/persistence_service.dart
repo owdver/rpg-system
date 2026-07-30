@@ -87,7 +87,10 @@ class PersistenceService {
 
   List<Mission> loadMissions() {
     final data = get<List<dynamic>>(StorageKeys.missions);
-    return data?.map((m) => Mission.fromJson(m as Map<String, dynamic>)).toList() ?? [];
+    return data
+            ?.map((m) => Mission.fromJson(m as Map<String, dynamic>))
+            .toList() ??
+        [];
   }
 
   // Active Mission
@@ -102,12 +105,16 @@ class PersistenceService {
 
   // Workout History
   Future<void> saveWorkoutHistory(List<WorkoutSession> workouts) async {
-    await save(StorageKeys.workoutHistory, workouts.map((w) => w.toJson()).toList());
+    await save(
+        StorageKeys.workoutHistory, workouts.map((w) => w.toJson()).toList());
   }
 
   List<WorkoutSession> loadWorkoutHistory() {
     final data = get<List<dynamic>>(StorageKeys.workoutHistory);
-    return data?.map((w) => WorkoutSession.fromJson(w as Map<String, dynamic>)).toList() ?? [];
+    return data
+            ?.map((w) => WorkoutSession.fromJson(w as Map<String, dynamic>))
+            .toList() ??
+        [];
   }
 
   // Recovery State
@@ -132,12 +139,16 @@ class PersistenceService {
 
   // Event History
   Future<void> saveEventHistory(List<SystemEvent> events) async {
-    await save(StorageKeys.eventHistory, events.map((e) => e.toJson()).toList());
+    await save(
+        StorageKeys.eventHistory, events.map((e) => e.toJson()).toList());
   }
 
   List<SystemEvent> loadEventHistory() {
     final data = get<List<dynamic>>(StorageKeys.eventHistory);
-    return data?.map((e) => SystemEvent.fromJson(e as Map<String, dynamic>)).toList() ?? [];
+    return data
+            ?.map((e) => SystemEvent.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        [];
   }
 
   // Sync timestamp

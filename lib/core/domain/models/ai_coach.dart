@@ -154,9 +154,11 @@ class AICoach {
 
     // Calculate metrics
     final todayWorkouts = _getTodayWorkouts(workouts).length;
-    final completedMissions = missions.where((m) => m.status == MissionStatus.completed).length;
+    final completedMissions =
+        missions.where((m) => m.status == MissionStatus.completed).length;
     final totalMissions = missions.length;
-    final missionRate = totalMissions > 0 ? (completedMissions / totalMissions * 100) : 0.0;
+    final missionRate =
+        totalMissions > 0 ? (completedMissions / totalMissions * 100) : 0.0;
     final readiness = recovery.readinessScore;
 
     // Generate response
@@ -166,7 +168,8 @@ class AICoach {
 
     if (readiness < 40) {
       title = 'RECOVERY INSUFFICIENT';
-      message = 'Readiness at ${readiness.toInt()}%. Recommend reducing workload by ${_calculateWorkloadReduction(readiness)}%.';
+      message =
+          'Readiness at ${readiness.toInt()}%. Recommend reducing workload by ${_calculateWorkloadReduction(readiness)}%.';
       priority = CoachPriority.high;
     } else if (todayWorkouts == 0) {
       title = 'DAILY MISSION AVAILABLE';
@@ -174,7 +177,8 @@ class AICoach {
       priority = CoachPriority.normal;
     } else {
       title = 'EVALUATION COMPLETE';
-      message = 'Today\'s performance within expected parameters. $todayWorkouts workout(s) logged. Mission completion rate: ${missionRate.toStringAsFixed(0)}%.';
+      message =
+          'Today\'s performance within expected parameters. $todayWorkouts workout(s) logged. Mission completion rate: ${missionRate.toStringAsFixed(0)}%.';
     }
 
     return CoachResponse(
@@ -188,7 +192,9 @@ class AICoach {
         'readiness': readiness,
         'todayWorkouts': todayWorkouts,
         'missionRate': missionRate,
-        'xpToday': xp.recentEvents.where((e) => _isToday(e.timestamp)).fold(0, (sum, e) => sum + e.effectiveXP),
+        'xpToday': xp.recentEvents
+            .where((e) => _isToday(e.timestamp))
+            .fold(0, (sum, e) => sum + e.effectiveXP),
       },
     );
   }
@@ -210,17 +216,20 @@ class AICoach {
 
     if (readiness < 30) {
       title = 'RECOVERY MODE RECOMMENDED';
-      message = 'Readiness critically low. Suggesting mobility or rest activities.';
+      message =
+          'Readiness critically low. Suggesting mobility or rest activities.';
       suggestedWorkout = 'recovery';
       intensity = 0.5;
     } else if (readiness < 60) {
       title = 'MODERATE INTENSITY SUGGESTED';
-      message = 'Readiness at ${readiness.toInt()}%. Recommend light to moderate training. Focus on ${lowestStat.label} development.';
+      message =
+          'Readiness at ${readiness.toInt()}%. Recommend light to moderate training. Focus on ${lowestStat.label} development.';
       suggestedWorkout = _getWorkoutForStat(lowestStat);
       intensity = 0.7;
     } else {
       title = 'HIGH INTENSITY APPROVED';
-      message = 'Readiness optimal at ${readiness.toInt()}%. Ready for challenging workout targeting ${lowestStat.label}.';
+      message =
+          'Readiness optimal at ${readiness.toInt()}%. Ready for challenging workout targeting ${lowestStat.label}.';
       suggestedWorkout = _getWorkoutForStat(lowestStat);
       intensity = 1.0;
     }
@@ -247,11 +256,13 @@ class AICoach {
     final recentWorkouts = _getRecentWorkouts(_gameState.workoutHistory, 7);
     final xp = _gameState.xpState;
     final stats = _gameState.userStats;
-    final completedMissions = _gameState.missions.where((m) => m.isComplete).length;
+    final completedMissions =
+        _gameState.missions.where((m) => m.isComplete).length;
     final totalMissions = _gameState.missions.length;
 
     final workoutCount = recentWorkouts.length;
-    final totalDuration = recentWorkouts.fold<int>(0, (sum, w) => sum + w.duration.inMinutes);
+    final totalDuration =
+        recentWorkouts.fold<int>(0, (sum, w) => sum + w.duration.inMinutes);
     final avgDuration = workoutCount > 0 ? totalDuration / workoutCount : 0;
     final xpEarned = xp.recentEvents
         .where((e) => _isWithinDays(e.timestamp, 7))
@@ -259,14 +270,17 @@ class AICoach {
 
     // Calculate stat changes
     final statChanges = _calculateStatTrends(stats);
-    final bestStat = statChanges.entries.reduce((a, b) => a.value > b.value ? a : b);
+    final bestStat =
+        statChanges.entries.reduce((a, b) => a.value > b.value ? a : b);
 
     String title = 'WEEKLY ANALYSIS COMPLETE';
-    String message = 'Training volume: $workoutCount sessions. Total duration: $totalDuration minutes. ';
+    String message =
+        'Training volume: $workoutCount sessions. Total duration: $totalDuration minutes. ';
     message += 'Average session: ${avgDuration.toStringAsFixed(0)} minutes. ';
     message += 'XP earned: $xpEarned. ';
     message += 'Missions completed: $completedMissions/$totalMissions. ';
-    message += '${bestStat.key.label} showing strongest growth at ${bestStat.value.toStringAsFixed(1)}%.';
+    message +=
+        '${bestStat.key.label} showing strongest growth at ${bestStat.value.toStringAsFixed(1)}%.';
 
     return CoachResponse(
       id: 'weekly_${DateTime.now().millisecondsSinceEpoch}',
@@ -316,7 +330,8 @@ class AICoach {
 
     if (recommendations.isEmpty) {
       title = 'RECOVERY OPTIMAL';
-      message = 'All recovery metrics within expected parameters. Continue current training approach.';
+      message =
+          'All recovery metrics within expected parameters. Continue current training approach.';
     } else {
       title = 'RECOVERY ADJUSTMENTS SUGGESTED';
       message = recommendations.join(' ');
@@ -354,7 +369,8 @@ class AICoach {
         id: 'alert_${DateTime.now().millisecondsSinceEpoch}',
         type: CoachResponseType.alert,
         title: 'CRITICAL: RECOVERY DEPLETED',
-        message: 'Immediate rest required. Readiness critically low at ${recovery.readinessScore.toInt()}%. Avoid training until recovery improves.',
+        message:
+            'Immediate rest required. Readiness critically low at ${recovery.readinessScore.toInt()}%. Avoid training until recovery improves.',
         timestamp: DateTime.now(),
         priority: CoachPriority.critical,
         data: {'readiness': recovery.readinessScore},
@@ -366,7 +382,8 @@ class AICoach {
         id: 'alert_${DateTime.now().millisecondsSinceEpoch}',
         type: CoachResponseType.alert,
         title: 'CONSISTENCY ALERT',
-        message: 'Training consistency below expected levels. $missedDays days without activity in past 14 days. Consider re-engaging routine.',
+        message:
+            'Training consistency below expected levels. $missedDays days without activity in past 14 days. Consider re-engaging routine.',
         timestamp: DateTime.now(),
         priority: CoachPriority.high,
         data: {'missedDays': missedDays},
@@ -382,14 +399,17 @@ class AICoach {
     return workouts.where((w) => _isToday(w.startTime)).toList();
   }
 
-  List<WorkoutSession> _getRecentWorkouts(List<WorkoutSession> workouts, int days) {
+  List<WorkoutSession> _getRecentWorkouts(
+      List<WorkoutSession> workouts, int days) {
     final cutoff = DateTime.now().subtract(Duration(days: days));
     return workouts.where((w) => w.startTime.isAfter(cutoff)).toList();
   }
 
   bool _isToday(DateTime date) {
     final now = DateTime.now();
-    return date.year == now.year && date.month == now.month && date.day == now.day;
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
   }
 
   bool _isWithinDays(DateTime date, int days) {
@@ -406,7 +426,9 @@ class AICoach {
   }
 
   String _getNextMissionBrief(List<Mission> missions) {
-    final active = missions.where((m) => m.status == MissionStatus.active || m.status == MissionStatus.available);
+    final active = missions.where((m) =>
+        m.status == MissionStatus.active ||
+        m.status == MissionStatus.available);
     if (active.isEmpty) return 'No active missions.';
     final mission = active.first;
     return 'Current objective: ${mission.title}.';
@@ -441,7 +463,8 @@ class AICoach {
     }
   }
 
-  Map<PrimaryStat, double> _analyzeWorkoutBalance(List<WorkoutSession> workouts) {
+  Map<PrimaryStat, double> _analyzeWorkoutBalance(
+      List<WorkoutSession> workouts) {
     final counts = <WorkoutType, int>{};
     for (final w in workouts) {
       counts[w.type] = (counts[w.type] ?? 0) + 1;
@@ -472,13 +495,15 @@ class AICoach {
   int _calculateMissedDays(List<WorkoutSession> workouts, int periodDays) {
     final workoutDays = <DateTime>{};
     for (final w in workouts) {
-      workoutDays.add(DateTime(w.startTime.year, w.startTime.month, w.startTime.day));
+      workoutDays
+          .add(DateTime(w.startTime.year, w.startTime.month, w.startTime.day));
     }
 
     int missed = 0;
     final now = DateTime.now();
     for (int i = 0; i < periodDays; i++) {
-      final day = DateTime(now.year, now.month, now.day).subtract(Duration(days: i));
+      final day =
+          DateTime(now.year, now.month, now.day).subtract(Duration(days: i));
       if (!workoutDays.contains(day) && i > 0) {
         missed++;
       }
@@ -499,7 +524,8 @@ class AICoachNotifier extends StateNotifier<AICoachState> {
     final response = _coach.evaluateDaily();
     state = state.copyWith(
       lastEvaluation: response,
-      conversationHistory: [response, ...state.conversationHistory].take(50).toList(),
+      conversationHistory:
+          [response, ...state.conversationHistory].take(50).toList(),
     );
     return response;
   }
@@ -508,7 +534,8 @@ class AICoachNotifier extends StateNotifier<AICoachState> {
     final response = _coach.recommendWorkout();
     state = state.copyWith(
       lastRecommendation: response,
-      conversationHistory: [response, ...state.conversationHistory].take(50).toList(),
+      conversationHistory:
+          [response, ...state.conversationHistory].take(50).toList(),
     );
     return response;
   }
@@ -516,7 +543,8 @@ class AICoachNotifier extends StateNotifier<AICoachState> {
   CoachResponse generateWeeklyReport() {
     final response = _coach.generateWeeklyReport();
     state = state.copyWith(
-      conversationHistory: [response, ...state.conversationHistory].take(50).toList(),
+      conversationHistory:
+          [response, ...state.conversationHistory].take(50).toList(),
     );
     return response;
   }
@@ -524,7 +552,8 @@ class AICoachNotifier extends StateNotifier<AICoachState> {
   CoachResponse adviseRecovery() {
     final response = _coach.adviseRecovery();
     state = state.copyWith(
-      conversationHistory: [response, ...state.conversationHistory].take(50).toList(),
+      conversationHistory:
+          [response, ...state.conversationHistory].take(50).toList(),
     );
     return response;
   }
@@ -533,7 +562,8 @@ class AICoachNotifier extends StateNotifier<AICoachState> {
     final alert = _coach.generateAlert();
     if (alert != null) {
       state = state.copyWith(
-        conversationHistory: [alert, ...state.conversationHistory].take(50).toList(),
+        conversationHistory:
+            [alert, ...state.conversationHistory].take(50).toList(),
       );
     }
     return alert;
@@ -541,7 +571,8 @@ class AICoachNotifier extends StateNotifier<AICoachState> {
 }
 
 /// Provider for AI Coach.
-final aiCoachProvider = StateNotifierProvider<AICoachNotifier, AICoachState>((ref) {
+final aiCoachProvider =
+    StateNotifierProvider<AICoachNotifier, AICoachState>((ref) {
   final gameState = ref.watch(gameEngineProvider);
   return AICoachNotifier(gameState);
 });

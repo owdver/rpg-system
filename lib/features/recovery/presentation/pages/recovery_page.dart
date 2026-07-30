@@ -172,7 +172,8 @@ class _SleepSection extends StatelessWidget {
                         color: AppColors.accentViolet,
                       ),
                     ),
-                    Container(width: 1, height: 50, color: AppColors.borderSubtle),
+                    Container(
+                        width: 1, height: 50, color: AppColors.borderSubtle),
                     Expanded(
                       child: _SleepMetric(
                         label: 'Quality',
@@ -181,7 +182,8 @@ class _SleepSection extends StatelessWidget {
                         color: AppColors.accentAmber,
                       ),
                     ),
-                    Container(width: 1, height: 50, color: AppColors.borderSubtle),
+                    Container(
+                        width: 1, height: 50, color: AppColors.borderSubtle),
                     Expanded(
                       child: _SleepMetric(
                         label: 'HRV',
@@ -258,7 +260,7 @@ class _SleepChartPainter extends CustomPainter {
     final path = Path();
     path.moveTo(0, size.height);
     path.lineTo(0, size.height * 0.4);
-    
+
     // Create a sleep stage chart
     final stages = [
       (0.0, 0.4),

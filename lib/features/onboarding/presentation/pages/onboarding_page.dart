@@ -284,13 +284,10 @@ class _OnboardingNavigation extends StatelessWidget {
           Expanded(
             flex: onBack != null ? 1 : 2,
             child: ElevatedButton(
-              onPressed: canProceed
-                  ? (isLastStep ? onComplete : onNext)
-                  : null,
+              onPressed: canProceed ? (isLastStep ? onComplete : onNext) : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isLastStep
-                    ? AppColors.accentSuccess
-                    : AppColors.accentCyan,
+                backgroundColor:
+                    isLastStep ? AppColors.accentSuccess : AppColors.accentCyan,
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 disabledBackgroundColor: AppColors.backgroundTertiary,
               ),
@@ -471,7 +468,9 @@ class _ExperienceStep extends ConsumerWidget {
                   isSelected: selectedLevel == level,
                   onTap: () {
                     ref.read(hapticManagerProvider).selection();
-                    ref.read(onboardingProvider.notifier).selectExperience(level);
+                    ref
+                        .read(onboardingProvider.notifier)
+                        .selectExperience(level);
                   },
                 ),
               )),
@@ -517,7 +516,9 @@ class _FrequencyStep extends ConsumerWidget {
                   isSelected: selectedFrequency == frequency,
                   onTap: () {
                     ref.read(hapticManagerProvider).selection();
-                    ref.read(onboardingProvider.notifier).selectFrequency(frequency);
+                    ref
+                        .read(onboardingProvider.notifier)
+                        .selectFrequency(frequency);
                   },
                 ),
               )),
@@ -565,7 +566,9 @@ class _TrainingTypesStep extends ConsumerWidget {
                 isSelected: isSelected,
                 onTap: () {
                   ref.read(hapticManagerProvider).selection();
-                  ref.read(onboardingProvider.notifier).toggleTrainingType(type);
+                  ref
+                      .read(onboardingProvider.notifier)
+                      .toggleTrainingType(type);
                 },
               );
             }).toList(),
@@ -691,12 +694,16 @@ class _FinalizeStep extends ConsumerWidget {
           InkWell(
             onTap: () {
               ref.read(hapticManagerProvider).selection();
-              ref.read(onboardingProvider.notifier).setTermsAccepted(!hasAcceptedTerms);
+              ref
+                  .read(onboardingProvider.notifier)
+                  .setTermsAccepted(!hasAcceptedTerms);
             },
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             child: HolographicContainer(
               borderRadius: AppSpacing.radiusMd,
-              glowColor: hasAcceptedTerms ? AppColors.accentSuccess : AppColors.textMuted,
+              glowColor: hasAcceptedTerms
+                  ? AppColors.accentSuccess
+                  : AppColors.textMuted,
               glowIntensity: hasAcceptedTerms ? 0.3 : 0.1,
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.lg),
@@ -878,7 +885,8 @@ class _TypeChip extends StatelessWidget {
             Text(
               label,
               style: AppTypography.labelMedium.copyWith(
-                color: isSelected ? AppColors.accentCyan : AppColors.textSecondary,
+                color:
+                    isSelected ? AppColors.accentCyan : AppColors.textSecondary,
               ),
             ),
           ],

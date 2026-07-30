@@ -81,7 +81,8 @@ class Logger {
     _log(LogLevel.fatal, message, error, stackTrace);
   }
 
-  void _log(LogLevel level, Object? message, Object? error, StackTrace? stackTrace) {
+  void _log(
+      LogLevel level, Object? message, Object? error, StackTrace? stackTrace) {
     final timestamp = DateTime.now();
     final logMessage = message?.toString() ?? '';
     final errorMsg = error?.toString();
@@ -102,8 +103,8 @@ class Logger {
 
   /// Log a method entry.
   void enter(String methodName, [Map<String, Object?>? params]) {
-    final paramsStr = params != null 
-        ? ', ${params.entries.map((e) => '${e.key}=${e.value}').join(', ')}' 
+    final paramsStr = params != null
+        ? ', ${params.entries.map((e) => '${e.key}=${e.value}').join(', ')}'
         : '';
     debug('→ $methodName($paramsStr)');
   }

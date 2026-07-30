@@ -47,7 +47,7 @@ class _HolographicContainerState extends State<HolographicContainer>
     super.initState();
     // Respect reduced motion preference
     final prefersReducedMotion = AccessibilityService().prefersReducedMotion;
-    
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
@@ -77,7 +77,7 @@ class _HolographicContainerState extends State<HolographicContainer>
     // Respect reduced motion preference
     final prefersReducedMotion = AccessibilityService().prefersReducedMotion;
     final shouldAnimate = !prefersReducedMotion;
-    
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {

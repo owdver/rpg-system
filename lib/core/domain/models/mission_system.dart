@@ -270,7 +270,8 @@ class Mission {
   /// Overall progress across all objectives.
   double get progress {
     if (objectives.isEmpty) return 0.0;
-    return objectives.fold(0.0, (sum, o) => sum + o.progress) / objectives.length;
+    return objectives.fold(0.0, (sum, o) => sum + o.progress) /
+        objectives.length;
   }
 
   /// Time remaining until deadline.

@@ -17,8 +17,10 @@ class ProgressPage extends ConsumerWidget {
     final missions = gameState.missions;
 
     final totalWorkouts = workouts.length;
-    final completedMissions = missions.where((m) => m.status == MissionStatus.completed).length;
-    final totalMinutes = workouts.fold<int>(0, (sum, w) => sum + w.duration.inMinutes);
+    final completedMissions =
+        missions.where((m) => m.status == MissionStatus.completed).length;
+    final totalMinutes =
+        workouts.fold<int>(0, (sum, w) => sum + w.duration.inMinutes);
 
     return Scaffold(
       body: Container(
@@ -33,11 +35,13 @@ class ProgressPage extends ConsumerWidget {
                 backgroundColor: Colors.transparent,
                 title: Row(
                   children: [
-                    const Icon(Icons.trending_up, color: AppColors.accentViolet),
+                    const Icon(Icons.trending_up,
+                        color: AppColors.accentViolet),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
                       'PROGRESS',
-                      style: AppTypography.headingLarge.copyWith(letterSpacing: 2),
+                      style:
+                          AppTypography.headingLarge.copyWith(letterSpacing: 2),
                     ),
                   ],
                 ),
@@ -124,7 +128,8 @@ class _LevelProgressSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('LEVEL', style: AppTypography.labelSmall),
-                      Text(rank.fullName.toUpperCase(), style: AppTypography.headingMedium),
+                      Text(rank.fullName.toUpperCase(),
+                          style: AppTypography.headingMedium),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
                         rank.label,
@@ -141,7 +146,8 @@ class _LevelProgressSection extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Progress to Level ${xpState.level + 1}', style: AppTypography.labelMedium),
+                Text('Progress to Level ${xpState.level + 1}',
+                    style: AppTypography.labelMedium),
                 Text(
                   '${xpState.totalXP} / ${xpState.totalXP + xpState.xpToNextLevel} XP',
                   style: AppTypography.numericSmall.copyWith(
@@ -449,7 +455,8 @@ class _WeeklyActivitySection extends StatelessWidget {
             w.startTime.day == day.day;
       }).toList();
 
-      final dayTotalMinutes = dayWorkoutList.fold<int>(0, (sum, w) => sum + w.duration.inMinutes);
+      final dayTotalMinutes =
+          dayWorkoutList.fold<int>(0, (sum, w) => sum + w.duration.inMinutes);
       final isActive = dayWorkoutList.isNotEmpty && day.isBefore(now);
       dayWorkouts.add(isActive);
       dayMinutes.add(dayTotalMinutes);
@@ -458,7 +465,8 @@ class _WeeklyActivitySection extends StatelessWidget {
     final totalWorkouts = workouts.where((w) {
       return w.startTime.isAfter(weekStart);
     }).length;
-    final totalMinutes = workouts.where((w) => w.startTime.isAfter(weekStart))
+    final totalMinutes = workouts
+        .where((w) => w.startTime.isAfter(weekStart))
         .fold<int>(0, (sum, w) => sum + w.duration.inMinutes);
 
     return Column(
@@ -508,7 +516,8 @@ class _WeeklyActivitySection extends StatelessWidget {
                           Text('Workouts', style: AppTypography.labelSmall),
                         ],
                       ),
-                      Container(width: 1, height: 40, color: AppColors.borderSubtle),
+                      Container(
+                          width: 1, height: 40, color: AppColors.borderSubtle),
                       Column(
                         children: [
                           Text(

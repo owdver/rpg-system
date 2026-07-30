@@ -181,7 +181,8 @@ class HealthIntegrationState {
         'lastSync': lastSync?.toIso8601String(),
         'syncStatus': syncStatus.index,
         'lastError': lastError,
-        'permissions': permissions.map((k, v) => MapEntry(k.index.toString(), v)),
+        'permissions':
+            permissions.map((k, v) => MapEntry(k.index.toString(), v)),
         'pendingSync': pendingSync,
       };
 
@@ -194,8 +195,8 @@ class HealthIntegrationState {
           : null,
       syncStatus: SyncStatus.values[json['syncStatus'] as int? ?? 0],
       lastError: json['lastError'] as String?,
-      permissions: (json['permissions'] as Map<String, dynamic>?)
-              ?.map((k, v) => MapEntry(HealthDataType.values[int.parse(k)], v as bool)) ??
+      permissions: (json['permissions'] as Map<String, dynamic>?)?.map((k, v) =>
+              MapEntry(HealthDataType.values[int.parse(k)], v as bool)) ??
           {},
       pendingSync: json['pendingSync'] as bool? ?? false,
     );
@@ -302,12 +303,15 @@ class HealthIntegrationService {
     final today = DateTime(now.year, now.month, now.day);
 
     // Get sleep data
-    final sleepData = getHealthData(HealthDataType.sleep, since: today.subtract(const Duration(hours: 12)));
+    final sleepData = getHealthData(HealthDataType.sleep,
+        since: today.subtract(const Duration(hours: 12)));
     final totalSleep = sleepData.fold<double>(0, (sum, d) => sum + d.value);
 
     // Get HRV data
     final hrvData = getHealthData(HealthDataType.hrv, since: today);
-    final avgHrv = hrvData.isNotEmpty ? hrvData.fold<double>(0, (sum, d) => sum + d.value) / hrvData.length : 0;
+    final avgHrv = hrvData.isNotEmpty
+        ? hrvData.fold<double>(0, (sum, d) => sum + d.value) / hrvData.length
+        : 0;
 
     // Get resting heart rate
     final hrData = getHealthData(HealthDataType.restingHeartRate, since: today);
@@ -353,14 +357,20 @@ class HealthIntegrationService {
 
     return {
       HealthDataType.steps: [
-        HealthDataPoint(type: HealthDataType.steps, value: 8547, timestamp: now),
+        HealthDataPoint(
+            type: HealthDataType.steps, value: 8547, timestamp: now),
       ],
       HealthDataType.heartRate: [
-        HealthDataPoint(type: HealthDataType.heartRate, value: 72, timestamp: now),
-        HealthDataPoint(type: HealthDataType.heartRate, value: 68, timestamp: now.subtract(const Duration(hours: 1))),
+        HealthDataPoint(
+            type: HealthDataType.heartRate, value: 72, timestamp: now),
+        HealthDataPoint(
+            type: HealthDataType.heartRate,
+            value: 68,
+            timestamp: now.subtract(const Duration(hours: 1))),
       ],
       HealthDataType.restingHeartRate: [
-        HealthDataPoint(type: HealthDataType.restingHeartRate, value: 58, timestamp: now),
+        HealthDataPoint(
+            type: HealthDataType.restingHeartRate, value: 58, timestamp: now),
       ],
       HealthDataType.hrv: [
         HealthDataPoint(type: HealthDataType.hrv, value: 45, timestamp: now),
@@ -374,20 +384,25 @@ class HealthIntegrationService {
         ),
       ],
       HealthDataType.calories: [
-        HealthDataPoint(type: HealthDataType.calories, value: 2150, timestamp: now),
+        HealthDataPoint(
+            type: HealthDataType.calories, value: 2150, timestamp: now),
       ],
       HealthDataType.activeEnergy: [
-        HealthDataPoint(type: HealthDataType.activeEnergy, value: 485, timestamp: now),
+        HealthDataPoint(
+            type: HealthDataType.activeEnergy, value: 485, timestamp: now),
       ],
       HealthDataType.workouts: [
-        HealthDataPoint(type: HealthDataType.workouts, value: 1, timestamp: today),
+        HealthDataPoint(
+            type: HealthDataType.workouts, value: 1, timestamp: today),
       ],
     };
   }
 }
 
 /// Provider for health integration service.
-final healthIntegrationProvider = StateNotifierProvider<HealthIntegrationNotifier, HealthIntegrationState>((ref) {
+final healthIntegrationProvider =
+    StateNotifierProvider<HealthIntegrationNotifier, HealthIntegrationState>(
+        (ref) {
   final service = HealthIntegrationService();
   ref.onDispose(() => service.dispose());
   return HealthIntegrationNotifier(service);

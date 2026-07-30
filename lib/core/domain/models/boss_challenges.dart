@@ -161,9 +161,9 @@ class BossChallenge {
   final String? icon;
 
   BossPhase get currentPhase => phases[currentPhaseIndex];
-  
+
   bool get isComplete => phases.every((p) => p.isComplete);
-  
+
   double get overallProgress {
     if (phases.isEmpty) return 0;
     return phases.fold(0.0, (sum, p) => sum + p.progress) / phases.length;
@@ -332,7 +332,10 @@ class BossCatalog {
         name: 'Phase 3',
         description: 'Complete 100 push-ups',
         target: 100,
-        rewards: {'xp': 200, 'stat': {'strength': 2}},
+        rewards: {
+          'xp': 200,
+          'stat': {'strength': 2}
+        },
       ),
     ],
     startTime: DateTime.now(),
@@ -368,7 +371,10 @@ class BossCatalog {
         name: 'Phase 3',
         description: 'Complete 10 pull-ups',
         target: 10,
-        rewards: {'xp': 300, 'stat': {'strength': 3}},
+        rewards: {
+          'xp': 300,
+          'stat': {'strength': 3}
+        },
       ),
     ],
     startTime: DateTime.now(),
@@ -404,7 +410,10 @@ class BossCatalog {
         name: 'Phase 3',
         description: 'Run 5km',
         target: 5,
-        rewards: {'xp': 400, 'stat': {'endurance': 5}},
+        rewards: {
+          'xp': 400,
+          'stat': {'endurance': 5}
+        },
       ),
     ],
     startTime: DateTime.now(),
@@ -440,7 +449,10 @@ class BossCatalog {
         name: 'Phase 3',
         description: 'Hold plank for 3 minutes',
         target: 180,
-        rewards: {'xp': 300, 'stat': {'strength': 3, 'focus': 2}},
+        rewards: {
+          'xp': 300,
+          'stat': {'strength': 3, 'focus': 2}
+        },
       ),
     ],
     startTime: DateTime.now(),
@@ -476,7 +488,10 @@ class BossCatalog {
         name: 'Phase 3',
         description: 'Complete 100 squats',
         target: 100,
-        rewards: {'xp': 200, 'stat': {'strength': 2}},
+        rewards: {
+          'xp': 200,
+          'stat': {'strength': 2}
+        },
       ),
     ],
     startTime: DateTime.now(),
@@ -519,7 +534,10 @@ class BossCatalog {
         name: 'Final Phase',
         description: 'Complete 30 days',
         target: 30,
-        rewards: {'xp': 1000, 'stat': {'recovery': 5, 'endurance': 5}},
+        rewards: {
+          'xp': 1000,
+          'stat': {'recovery': 5, 'endurance': 5}
+        },
       ),
     ],
     startTime: DateTime.now(),
@@ -555,7 +573,10 @@ class BossCatalog {
         name: 'Phase 3',
         description: 'Complete 100 workouts',
         target: 100,
-        rewards: {'xp': 800, 'stat': {'strength': 10}},
+        rewards: {
+          'xp': 800,
+          'stat': {'strength': 10}
+        },
       ),
     ],
     startTime: DateTime.now(),
@@ -591,7 +612,10 @@ class BossCatalog {
         name: 'Long Run',
         description: 'Complete 10km run',
         target: 10,
-        rewards: {'xp': 400, 'stat': {'endurance': 8}},
+        rewards: {
+          'xp': 400,
+          'stat': {'endurance': 8}
+        },
       ),
     ],
     startTime: DateTime.now(),
@@ -627,7 +651,10 @@ class BossCatalog {
         name: 'Balance',
         description: 'Complete both in 30 days',
         target: 30,
-        rewards: {'xp': 600, 'stat': {'strength': 5, 'endurance': 5}},
+        rewards: {
+          'xp': 600,
+          'stat': {'strength': 5, 'endurance': 5}
+        },
       ),
     ],
     startTime: DateTime.now(),
@@ -670,7 +697,10 @@ class BossCatalog {
         name: 'Mastery',
         description: 'All stats 40+',
         target: 40,
-        rewards: {'xp': 1000, 'stat': {'strength': 5, 'endurance': 5, 'recovery': 5}},
+        rewards: {
+          'xp': 1000,
+          'stat': {'strength': 5, 'endurance': 5, 'recovery': 5}
+        },
       ),
     ],
     startTime: DateTime.now(),
@@ -744,7 +774,8 @@ class BossState {
       activeBoss: json['activeBoss'] != null
           ? BossChallenge.fromJson(json['activeBoss'] as Map<String, dynamic>)
           : null,
-      completedBosses: (json['completedBosses'] as List<dynamic>?)?.cast<String>() ?? [],
+      completedBosses:
+          (json['completedBosses'] as List<dynamic>?)?.cast<String>() ?? [],
       defeatedCount: json['defeatedCount'] as int? ?? 0,
     );
   }

@@ -49,7 +49,8 @@ class AchievementDetailPage extends StatelessWidget {
                         glowIntensity: 0.4,
                         child: Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+                            borderRadius:
+                                BorderRadius.circular(AppSpacing.radiusXl),
                             color: AppColors.accentAmber.withOpacity(0.2),
                           ),
                           child: const Center(

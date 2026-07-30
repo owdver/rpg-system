@@ -140,211 +140,233 @@ class _AuthPageState extends ConsumerState<AuthPage>
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                            // Logo
-                            Center(
-                              child: Container(
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                                  gradient: AppColors.energyActive,
-                                ),
-                                child: const Icon(
-                                  Icons.psychology_outlined,
-                                  size: 48,
-                                  color: AppColors.backgroundPrimary,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.xl),
-
-                            // Title
-                            Center(
-                              child: ShaderMask(
-                                shaderCallback: (bounds) => const LinearGradient(
-                                  colors: [AppColors.accentCyan, AppColors.accentBlue],
-                                ).createShader(bounds),
-                                child: Text(
-                                  _isSignUp ? 'CREATE ACCOUNT' : 'SYSTEM ACCESS',
-                                  style: AppTypography.headingMedium.copyWith(
-                                    letterSpacing: 2,
-                                    color: Colors.white,
+                              // Logo
+                              Center(
+                                child: Container(
+                                  width: 80,
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                        AppSpacing.radiusLg),
+                                    gradient: AppColors.energyActive,
+                                  ),
+                                  child: const Icon(
+                                    Icons.psychology_outlined,
+                                    size: 48,
+                                    color: AppColors.backgroundPrimary,
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            Center(
-                              child: Text(
-                                _isSignUp
-                                    ? 'Join the system'
-                                    : 'Authenticate to continue',
-                                style: AppTypography.bodySmall,
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.xxl),
+                              const SizedBox(height: AppSpacing.xl),
 
-                            // Display name (sign up only)
-                            if (_isSignUp) ...[
+                              // Title
+                              Center(
+                                child: ShaderMask(
+                                  shaderCallback: (bounds) =>
+                                      const LinearGradient(
+                                    colors: [
+                                      AppColors.accentCyan,
+                                      AppColors.accentBlue
+                                    ],
+                                  ).createShader(bounds),
+                                  child: Text(
+                                    _isSignUp
+                                        ? 'CREATE ACCOUNT'
+                                        : 'SYSTEM ACCESS',
+                                    style: AppTypography.headingMedium.copyWith(
+                                      letterSpacing: 2,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
+                              Center(
+                                child: Text(
+                                  _isSignUp
+                                      ? 'Join the system'
+                                      : 'Authenticate to continue',
+                                  style: AppTypography.bodySmall,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.xxl),
+
+                              // Display name (sign up only)
+                              if (_isSignUp) ...[
+                                _HolographicTextField(
+                                  controller: _displayNameController,
+                                  label: 'Designation',
+                                  hint: 'Enter your name',
+                                  icon: Icons.badge_outlined,
+                                  validator: (value) {
+                                    if (value == null || value.trim().isEmpty) {
+                                      return 'Designation required';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                              ],
+
+                              // Email field
                               _HolographicTextField(
-                                controller: _displayNameController,
-                                label: 'Designation',
-                                hint: 'Enter your name',
-                                icon: Icons.badge_outlined,
+                                controller: _emailController,
+                                label: 'Identity',
+                                hint: 'Enter your email',
+                                icon: Icons.email_outlined,
+                                keyboardType: TextInputType.emailAddress,
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Designation required';
+                                    return 'Identity required';
+                                  }
+                                  if (!value.contains('@')) {
+                                    return 'Invalid identity format';
                                   }
                                   return null;
                                 },
                               ),
                               const SizedBox(height: AppSpacing.lg),
-                            ],
 
-                            // Email field
-                            _HolographicTextField(
-                              controller: _emailController,
-                              label: 'Identity',
-                              hint: 'Enter your email',
-                              icon: Icons.email_outlined,
-                              keyboardType: TextInputType.emailAddress,
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return 'Identity required';
-                                }
-                                if (!value.contains('@')) {
-                                  return 'Invalid identity format';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: AppSpacing.lg),
-
-                            // Password field
-                            _HolographicTextField(
-                              controller: _passwordController,
-                              label: 'Access Key',
-                              hint: 'Enter your password',
-                              icon: Icons.lock_outline,
-                              obscureText: _obscurePassword,
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_outlined
-                                      : Icons.visibility_off_outlined,
-                                  color: AppColors.textSecondary,
-                                  size: 20,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Access key required';
-                                }
-                                if (_isSignUp && value.length < 8) {
-                                  return 'Minimum 8 characters';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: AppSpacing.xxl),
-
-                            // Error message
-                            if (authState.error != null)
-                              Container(
-                                padding: const EdgeInsets.all(AppSpacing.md),
-                                decoration: BoxDecoration(
-                                  color: AppColors.accentError.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                                  border: Border.all(
-                                    color: AppColors.accentError.withOpacity(0.3),
+                              // Password field
+                              _HolographicTextField(
+                                controller: _passwordController,
+                                label: 'Access Key',
+                                hint: 'Enter your password',
+                                icon: Icons.lock_outline,
+                                obscureText: _obscurePassword,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                    color: AppColors.textSecondary,
+                                    size: 20,
                                   ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.error_outline,
-                                      color: AppColors.accentError,
-                                      size: 20,
-                                    ),
-                                    const SizedBox(width: AppSpacing.sm),
-                                    Expanded(
-                                      child: Text(
-                                        authState.error!,
-                                        style: AppTypography.bodySmall.copyWith(
-                                          color: AppColors.accentError,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            if (authState.error != null)
-                              const SizedBox(height: AppSpacing.lg),
-
-                            // Submit button
-                            _HolographicButton(
-                              onPressed: authState.isLoading ? null : _handleSubmit,
-                              isLoading: authState.isLoading,
-                              label: _isSignUp ? 'INITIALIZE' : 'AUTHENTICATE',
-                            ),
-                            const SizedBox(height: AppSpacing.lg),
-
-                            // Divider
-                            Row(
-                              children: [
-                                Expanded(child: Divider(color: AppColors.borderSubtle)),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                                  child: Text(
-                                    'OR',
-                                    style: AppTypography.labelSmall,
-                                  ),
-                                ),
-                                Expanded(child: Divider(color: AppColors.borderSubtle)),
-                              ],
-                            ),
-                            const SizedBox(height: AppSpacing.lg),
-
-                            // Google sign in
-                            _GoogleSignInButton(
-                              onPressed: authState.isLoading ? null : _handleGoogleSignIn,
-                            ),
-                            const SizedBox(height: AppSpacing.xxl),
-
-                            // Toggle sign in/up
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  _isSignUp
-                                      ? 'Already initialized?'
-                                      : 'New operative?',
-                                  style: AppTypography.bodySmall,
-                                ),
-                                TextButton(
                                   onPressed: () {
                                     setState(() {
-                                      _isSignUp = !_isSignUp;
+                                      _obscurePassword = !_obscurePassword;
                                     });
                                   },
-                                  child: Text(
-                                    _isSignUp ? 'Access system' : 'Create account',
-                                    style: AppTypography.labelLarge.copyWith(
-                                      color: AppColors.accentCyan,
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Access key required';
+                                  }
+                                  if (_isSignUp && value.length < 8) {
+                                    return 'Minimum 8 characters';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: AppSpacing.xxl),
+
+                              // Error message
+                              if (authState.error != null)
+                                Container(
+                                  padding: const EdgeInsets.all(AppSpacing.md),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        AppColors.accentError.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(
+                                        AppSpacing.radiusSm),
+                                    border: Border.all(
+                                      color: AppColors.accentError
+                                          .withOpacity(0.3),
                                     ),
                                   ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.error_outline,
+                                        color: AppColors.accentError,
+                                        size: 20,
+                                      ),
+                                      const SizedBox(width: AppSpacing.sm),
+                                      Expanded(
+                                        child: Text(
+                                          authState.error!,
+                                          style:
+                                              AppTypography.bodySmall.copyWith(
+                                            color: AppColors.accentError,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ],
+                              if (authState.error != null)
+                                const SizedBox(height: AppSpacing.lg),
+
+                              // Submit button
+                              _HolographicButton(
+                                onPressed:
+                                    authState.isLoading ? null : _handleSubmit,
+                                isLoading: authState.isLoading,
+                                label:
+                                    _isSignUp ? 'INITIALIZE' : 'AUTHENTICATE',
+                              ),
+                              const SizedBox(height: AppSpacing.lg),
+
+                              // Divider
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: Divider(
+                                          color: AppColors.borderSubtle)),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: AppSpacing.md),
+                                    child: Text(
+                                      'OR',
+                                      style: AppTypography.labelSmall,
+                                    ),
+                                  ),
+                                  Expanded(
+                                      child: Divider(
+                                          color: AppColors.borderSubtle)),
+                                ],
+                              ),
+                              const SizedBox(height: AppSpacing.lg),
+
+                              // Google sign in
+                              _GoogleSignInButton(
+                                onPressed: authState.isLoading
+                                    ? null
+                                    : _handleGoogleSignIn,
+                              ),
+                              const SizedBox(height: AppSpacing.xxl),
+
+                              // Toggle sign in/up
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    _isSignUp
+                                        ? 'Already initialized?'
+                                        : 'New operative?',
+                                    style: AppTypography.bodySmall,
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _isSignUp = !_isSignUp;
+                                      });
+                                    },
+                                    child: Text(
+                                      _isSignUp
+                                          ? 'Access system'
+                                          : 'Create account',
+                                      style: AppTypography.labelLarge.copyWith(
+                                        color: AppColors.accentCyan,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                  ),
                     ),
                   ),
                 ),

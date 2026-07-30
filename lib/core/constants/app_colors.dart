@@ -10,8 +10,10 @@ abstract final class AppColors {
 
   // Surface Colors (Glass)
   static Color get surfaceGlass => const Color(0xFF0A1626).withOpacity(0.72);
-  static Color get surfaceGlassStrong => const Color(0xFF101F36).withOpacity(0.88);
-  static Color get surfaceGlassLight => const Color(0xFF142040).withOpacity(0.60);
+  static Color get surfaceGlassStrong =>
+      const Color(0xFF101F36).withOpacity(0.88);
+  static Color get surfaceGlassLight =>
+      const Color(0xFF142040).withOpacity(0.60);
 
   // Border Colors
   static Color get borderAccent => const Color(0xFF55DCFF).withOpacity(0.45);
@@ -93,20 +95,20 @@ abstract final class AppColors {
 
   // Radial Gradients for Glow Effects
   static RadialGradient get cyanGlow => const RadialGradient(
-    colors: [
-      Color(0xFF54E6FF),
-      Color(0x0054E6FF),
-    ],
-    stops: [0.0, 1.0],
-  );
+        colors: [
+          Color(0xFF54E6FF),
+          Color(0x0054E6FF),
+        ],
+        stops: [0.0, 1.0],
+      );
 
   static RadialGradient get violetGlow => const RadialGradient(
-    colors: [
-      Color(0xFF8C7DFF),
-      Color(0x008C7DFF),
-    ],
-    stops: [0.0, 1.0],
-  );
+        colors: [
+          Color(0xFF8C7DFF),
+          Color(0x008C7DFF),
+        ],
+        stops: [0.0, 1.0],
+      );
 
   // Status Colors
   static const Color statusOnline = accentSuccess;

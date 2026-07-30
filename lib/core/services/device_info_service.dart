@@ -159,9 +159,12 @@ class ResponsiveBuilder extends StatelessWidget {
   });
 
   final Widget Function(BuildContext context, ResponsiveConfig config) builder;
-  final Widget Function(BuildContext context, ResponsiveConfig config)? phoneBuilder;
-  final Widget Function(BuildContext context, ResponsiveConfig config)? tabletBuilder;
-  final Widget Function(BuildContext context, ResponsiveConfig config)? desktopBuilder;
+  final Widget Function(BuildContext context, ResponsiveConfig config)?
+      phoneBuilder;
+  final Widget Function(BuildContext context, ResponsiveConfig config)?
+      tabletBuilder;
+  final Widget Function(BuildContext context, ResponsiveConfig config)?
+      desktopBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +176,8 @@ class ResponsiveBuilder extends StatelessWidget {
       case DeviceType.tablet:
         return tabletBuilder?.call(context, config) ?? builder(context, config);
       case DeviceType.desktop:
-        return desktopBuilder?.call(context, config) ?? builder(context, config);
+        return desktopBuilder?.call(context, config) ??
+            builder(context, config);
     }
   }
 }

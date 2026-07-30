@@ -232,7 +232,8 @@ class XPState {
   }
 
   /// Add XP and return new state with level up if applicable.
-  (XPState, bool) addXP(int xp, XPSource source, {String? missionId, String? workoutId}) {
+  (XPState, bool) addXP(int xp, XPSource source,
+      {String? missionId, String? workoutId}) {
     final newTotalXP = totalXP + xp;
     final newLevel = levelFromXP(newTotalXP);
     final leveledUp = newLevel > level;
@@ -252,9 +253,12 @@ class XPState {
         currentLevelXP: xp,
         level: newLevel,
         recentEvents: [event, ...recentEvents].take(100).toList(),
-        streakDays: source == XPSource.dailyStreak ? streakDays + 1 : streakDays,
-        streakWeeks: source == XPSource.weeklyStreak ? streakWeeks + 1 : streakWeeks,
-        streakMonths: source == XPSource.monthlyStreak ? streakMonths + 1 : streakMonths,
+        streakDays:
+            source == XPSource.dailyStreak ? streakDays + 1 : streakDays,
+        streakWeeks:
+            source == XPSource.weeklyStreak ? streakWeeks + 1 : streakWeeks,
+        streakMonths:
+            source == XPSource.monthlyStreak ? streakMonths + 1 : streakMonths,
       ),
       leveledUp
     );

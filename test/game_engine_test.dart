@@ -203,7 +203,8 @@ void main() {
     });
 
     test('Mission completed event creation', () {
-      final event = EventFactory.missionCompleted('mission_123', 'Daily Challenge', 250);
+      final event =
+          EventFactory.missionCompleted('mission_123', 'Daily Challenge', 250);
 
       expect(event.type, SystemEventType.missionCompleted);
       expect(event.data?['xpReward'], 250);

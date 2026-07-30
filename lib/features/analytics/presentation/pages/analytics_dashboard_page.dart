@@ -10,7 +10,8 @@ class AnalyticsDashboardPage extends ConsumerStatefulWidget {
   const AnalyticsDashboardPage({super.key});
 
   @override
-  ConsumerState<AnalyticsDashboardPage> createState() => _AnalyticsDashboardPageState();
+  ConsumerState<AnalyticsDashboardPage> createState() =>
+      _AnalyticsDashboardPageState();
 }
 
 class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
@@ -18,7 +19,12 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
   late TabController _tabController;
   int _selectedRange = 1; // 0: 7d, 1: 30d, 2: 90d, 3: all
 
-  final List<String> _rangeLabels = ['7 Days', '30 Days', '90 Days', 'All Time'];
+  final List<String> _rangeLabels = [
+    '7 Days',
+    '30 Days',
+    '90 Days',
+    'All Time'
+  ];
 
   @override
   void initState() {
@@ -133,7 +139,8 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
                     color: isSelected
                         ? AppColors.accentCyan
                         : AppColors.textSecondary,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
                     fontSize: 12,
                   ),
                 ),
@@ -154,7 +161,8 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
             value: state.xpState.totalXP.toString(),
             icon: Icons.star,
             color: AppColors.accentAmber,
-            trend: _calculateTrend(state.recentEvents, SystemEventType.xpEarned),
+            trend:
+                _calculateTrend(state.recentEvents, SystemEventType.xpEarned),
           ),
         ),
         const SizedBox(width: AppSpacing.sm),
@@ -164,7 +172,8 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
             value: state.workoutHistory.length.toString(),
             icon: Icons.fitness_center,
             color: AppColors.accentCyan,
-            trend: _calculateTrend(state.recentEvents, SystemEventType.workoutFinished),
+            trend: _calculateTrend(
+                state.recentEvents, SystemEventType.workoutFinished),
           ),
         ),
         const SizedBox(width: AppSpacing.sm),
@@ -186,14 +195,17 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
     final now = DateTime.now();
     final weekAgo = now.subtract(const Duration(days: 7));
     final twoWeeksAgo = now.subtract(const Duration(days: 14));
-    
-    final recentCount = events.where(
-      (e) => e.type == type && e.timestamp.isAfter(weekAgo)
-    ).length;
-    final olderCount = events.where(
-      (e) => e.type == type && e.timestamp.isAfter(twoWeeksAgo) && e.timestamp.isBefore(weekAgo)
-    ).length;
-    
+
+    final recentCount = events
+        .where((e) => e.type == type && e.timestamp.isAfter(weekAgo))
+        .length;
+    final olderCount = events
+        .where((e) =>
+            e.type == type &&
+            e.timestamp.isAfter(twoWeeksAgo) &&
+            e.timestamp.isBefore(weekAgo))
+        .length;
+
     if (olderCount == 0) return recentCount > 0 ? 1.0 : 0;
     return (recentCount - olderCount) / olderCount;
   }
@@ -224,7 +236,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
 
   Widget _buildXPChart(GameState state) {
     final dataPoints = _generateXPDataPoints(state.recentEvents);
-    
+
     return _ChartContainer(
       title: 'XP History',
       subtitle: 'Experience points earned over time',
@@ -232,7 +244,11 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
       stats: [
         _StatItem('Total', _formatNumber(dataPoints.fold(0, (a, b) => a + b))),
         _StatItem('Average', _formatNumber(_average(dataPoints))),
-        _StatItem('Peak', _formatNumber(dataPoints.isEmpty ? 0 : dataPoints.reduce((a, b) => a > b ? a : b))),
+        _StatItem(
+            'Peak',
+            _formatNumber(dataPoints.isEmpty
+                ? 0
+                : dataPoints.reduce((a, b) => a > b ? a : b))),
       ],
     );
   }
@@ -240,7 +256,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
   Widget _buildWorkoutChart(GameState state) {
     final dataPoints = _generateWorkoutDataPoints(state.recentEvents);
     final totalWorkouts = state.workoutHistory.length;
-    
+
     return _ChartContainer(
       title: 'Workout Frequency',
       subtitle: 'Workouts completed per period',
@@ -255,8 +271,13 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
 
   Widget _buildRecoveryChart(GameState state) {
     final recoveryValue = state.recovery.readinessScore.toInt();
-    final dataPoints = [recoveryValue, recoveryValue, recoveryValue, recoveryValue];
-    
+    final dataPoints = [
+      recoveryValue,
+      recoveryValue,
+      recoveryValue,
+      recoveryValue
+    ];
+
     return _ChartContainer(
       title: 'Recovery Trend',
       subtitle: 'Weekly recovery scores',
@@ -282,11 +303,16 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
       subtitle: 'Capability improvements',
       chart: _buildRadarChart(state.userStats),
       stats: [
-        _StatItem('Strength', state.userStats.strength.current.toStringAsFixed(0)),
-        _StatItem('Endurance', state.userStats.endurance.current.toStringAsFixed(0)),
-        _StatItem('Mobility', state.userStats.mobility.current.toStringAsFixed(0)),
-        _StatItem('Recovery', state.userStats.recovery.current.toStringAsFixed(0)),
-        _StatItem('Precision', state.userStats.precision.current.toStringAsFixed(0)),
+        _StatItem(
+            'Strength', state.userStats.strength.current.toStringAsFixed(0)),
+        _StatItem(
+            'Endurance', state.userStats.endurance.current.toStringAsFixed(0)),
+        _StatItem(
+            'Mobility', state.userStats.mobility.current.toStringAsFixed(0)),
+        _StatItem(
+            'Recovery', state.userStats.recovery.current.toStringAsFixed(0)),
+        _StatItem(
+            'Precision', state.userStats.precision.current.toStringAsFixed(0)),
       ],
     );
   }
@@ -295,7 +321,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
     final completed = state.achievements.unlockedCount;
     final total = state.achievements.achievements.length;
     final progress = total > 0 ? completed / total : 0.0;
-    
+
     return _ChartContainer(
       title: 'Achievement Progress',
       subtitle: 'Unlocked vs total achievements',
@@ -317,7 +343,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
         ),
       );
     }
-    
+
     return CustomPaint(
       size: const Size(double.infinity, 200),
       painter: _LineChartPainter(data, color),
@@ -333,7 +359,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
         ),
       );
     }
-    
+
     return CustomPaint(
       size: const Size(double.infinity, 200),
       painter: _BarChartPainter(data, color),
@@ -349,7 +375,7 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
         ),
       );
     }
-    
+
     return CustomPaint(
       size: const Size(double.infinity, 200),
       painter: _AreaChartPainter(data, color),
@@ -408,25 +434,39 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
 
   List<int> _generateXPDataPoints(List<SystemEvent> events) {
     final now = DateTime.now();
-    final days = _selectedRange == 0 ? 7 : _selectedRange == 1 ? 30 : _selectedRange == 2 ? 90 : 365;
+    final days = _selectedRange == 0
+        ? 7
+        : _selectedRange == 1
+            ? 30
+            : _selectedRange == 2
+                ? 90
+                : 365;
     final startDate = now.subtract(Duration(days: days));
-    
-    final filteredEvents = events.where(
-      (e) => e.type == SystemEventType.xpEarned && e.timestamp.isAfter(startDate)
-    );
-    
+
+    final filteredEvents = events.where((e) =>
+        e.type == SystemEventType.xpEarned && e.timestamp.isAfter(startDate));
+
     final Map<String, int> dailyXP = {};
     for (final event in filteredEvents) {
-      final key = '${event.timestamp.year}-${event.timestamp.month}-${event.timestamp.day}';
+      final key =
+          '${event.timestamp.year}-${event.timestamp.month}-${event.timestamp.day}';
       final currentValue = dailyXP[key] ?? 0;
       final xpToAdd = (event.data?['xp'] as int?) ?? 0;
       dailyXP[key] = currentValue + xpToAdd;
     }
-    
+
     return List.generate(
       days > 30 ? 12 : days,
       (i) {
-        final date = startDate.add(Duration(days: (i * days / (_selectedRange == 0 ? 7 : _selectedRange == 1 ? 12 : 12)).floor()));
+        final date = startDate.add(Duration(
+            days: (i *
+                    days /
+                    (_selectedRange == 0
+                        ? 7
+                        : _selectedRange == 1
+                            ? 12
+                            : 12))
+                .floor()));
         final key = '${date.year}-${date.month}-${date.day}';
         return dailyXP[key] ?? 0;
       },
@@ -435,23 +475,38 @@ class _AnalyticsDashboardPageState extends ConsumerState<AnalyticsDashboardPage>
 
   List<int> _generateWorkoutDataPoints(List<SystemEvent> events) {
     final now = DateTime.now();
-    final days = _selectedRange == 0 ? 7 : _selectedRange == 1 ? 30 : _selectedRange == 2 ? 90 : 365;
+    final days = _selectedRange == 0
+        ? 7
+        : _selectedRange == 1
+            ? 30
+            : _selectedRange == 2
+                ? 90
+                : 365;
     final startDate = now.subtract(Duration(days: days));
-    
-    final filteredEvents = events.where(
-      (e) => e.type == SystemEventType.workoutFinished && e.timestamp.isAfter(startDate)
-    );
-    
+
+    final filteredEvents = events.where((e) =>
+        e.type == SystemEventType.workoutFinished &&
+        e.timestamp.isAfter(startDate));
+
     final Map<String, int> dailyWorkouts = {};
     for (final event in filteredEvents) {
-      final key = '${event.timestamp.year}-${event.timestamp.month}-${event.timestamp.day}';
+      final key =
+          '${event.timestamp.year}-${event.timestamp.month}-${event.timestamp.day}';
       dailyWorkouts[key] = (dailyWorkouts[key] ?? 0) + 1;
     }
-    
+
     return List.generate(
       days > 30 ? 12 : days,
       (i) {
-        final date = startDate.add(Duration(days: (i * days / (_selectedRange == 0 ? 7 : _selectedRange == 1 ? 12 : 12)).floor()));
+        final date = startDate.add(Duration(
+            days: (i *
+                    days /
+                    (_selectedRange == 0
+                        ? 7
+                        : _selectedRange == 1
+                            ? 12
+                            : 12))
+                .floor()));
         final key = '${date.year}-${date.month}-${date.day}';
         return dailyWorkouts[key] ?? 0;
       },
@@ -516,52 +571,56 @@ class _OverviewCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Material(
-        color: Colors.transparent,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: color, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              value,
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            if (trend != 0)
+          color: Colors.transparent,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Row(
                 children: [
-                  Icon(
-                    trend > 0 ? Icons.arrow_upward : Icons.arrow_downward,
-                    color: trend > 0 ? AppColors.accentSuccess : AppColors.accentError,
-                    size: 12,
-                  ),
+                  Icon(icon, color: color, size: 16),
+                  const SizedBox(width: 4),
                   Text(
-                    '${(trend.abs() * 100).toInt()}%',
+                    title,
                     style: TextStyle(
-                      color: trend > 0 ? AppColors.accentSuccess : AppColors.accentError,
+                      color: AppColors.textSecondary,
                       fontSize: 10,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
-          ],
-        ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                value,
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (trend != 0)
+                Row(
+                  children: [
+                    Icon(
+                      trend > 0 ? Icons.arrow_upward : Icons.arrow_downward,
+                      color: trend > 0
+                          ? AppColors.accentSuccess
+                          : AppColors.accentError,
+                      size: 12,
+                    ),
+                    Text(
+                      '${(trend.abs() * 100).toInt()}%',
+                      style: TextStyle(
+                        color: trend > 0
+                            ? AppColors.accentSuccess
+                            : AppColors.accentError,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -613,32 +672,34 @@ class _ChartContainer extends StatelessWidget {
                   ],
                 ),
                 Row(
-                  children: stats.map((stat) => Padding(
-                    padding: const EdgeInsets.only(left: AppSpacing.md),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            stat.label,
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 9,
+                  children: stats
+                      .map((stat) => Padding(
+                            padding: const EdgeInsets.only(left: AppSpacing.md),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    stat.label,
+                                    style: TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 9,
+                                    ),
+                                  ),
+                                  Text(
+                                    stat.value,
+                                    style: const TextStyle(
+                                      color: AppColors.textPrimary,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Text(
-                            stat.value,
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )).toList(),
+                          ))
+                      .toList(),
                 ),
               ],
             ),
@@ -894,5 +955,8 @@ double _cos(double x) {
 }
 
 double _sin(double x) {
-  return x - x * x * x / 6 + x * x * x * x * x / 120 - x * x * x * x * x * x * x / 5040;
+  return x -
+      x * x * x / 6 +
+      x * x * x * x * x / 120 -
+      x * x * x * x * x * x * x / 5040;
 }

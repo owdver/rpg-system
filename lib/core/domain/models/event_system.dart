@@ -199,7 +199,8 @@ class EventFactory {
     );
   }
 
-  static SystemEvent workoutFinished(String workoutId, int xpEarned, int qualityScore) {
+  static SystemEvent workoutFinished(
+      String workoutId, int xpEarned, int qualityScore) {
     return SystemEvent(
       id: _generateId(),
       type: SystemEventType.workoutFinished,
@@ -214,7 +215,8 @@ class EventFactory {
     );
   }
 
-  static SystemEvent missionCompleted(String missionId, String title, int xpReward) {
+  static SystemEvent missionCompleted(
+      String missionId, String title, int xpReward) {
     return SystemEvent(
       id: _generateId(),
       type: SystemEventType.missionCompleted,

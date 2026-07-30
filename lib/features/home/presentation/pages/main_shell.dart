@@ -265,7 +265,8 @@ class _NavBarItemState extends State<_NavBarItem>
                 color: widget.isSelected
                     ? AppColors.accentCyan
                     : AppColors.textSecondary,
-                fontWeight: widget.isSelected ? FontWeight.w600 : FontWeight.w500,
+                fontWeight:
+                    widget.isSelected ? FontWeight.w600 : FontWeight.w500,
               ),
             ),
             if (widget.isSelected)

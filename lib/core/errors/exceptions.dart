@@ -1,12 +1,13 @@
 /// Custom exceptions for the RPG System application.
 sealed class AppException implements Exception {
   const AppException(this.message, [this.cause]);
-  
+
   final String message;
   final Object? cause;
 
   @override
-  String toString() => '$runtimeType: $message${cause != null ? ' (Caused by: $cause)' : ''}';
+  String toString() =>
+      '$runtimeType: $message${cause != null ? ' (Caused by: $cause)' : ''}';
 }
 
 /// Network-related exceptions.
@@ -24,7 +25,8 @@ final class NetworkException extends AppException {
 final class AuthException extends AppException {
   const AuthException(super.message, [super.cause]);
 
-  static const invalidCredentials = AuthException('Invalid credentials provided');
+  static const invalidCredentials =
+      AuthException('Invalid credentials provided');
   static const notAuthenticated = AuthException('User is not authenticated');
   static const sessionExpired = AuthException('Session has expired');
   static const permissionDenied = AuthException('Permission denied');
@@ -44,18 +46,24 @@ final class StorageException extends AppException {
 final class HealthIntegrationException extends AppException {
   const HealthIntegrationException(super.message, [super.cause]);
 
-  static const notAvailable = HealthIntegrationException('Health integration not available');
-  static const permissionDenied = HealthIntegrationException('Health data permission denied');
-  static const syncFailed = HealthIntegrationException('Health data sync failed');
-  static const incompatibleData = HealthIntegrationException('Incompatible health data format');
+  static const notAvailable =
+      HealthIntegrationException('Health integration not available');
+  static const permissionDenied =
+      HealthIntegrationException('Health data permission denied');
+  static const syncFailed =
+      HealthIntegrationException('Health data sync failed');
+  static const incompatibleData =
+      HealthIntegrationException('Incompatible health data format');
 }
 
 /// Sync and offline operation exceptions.
 final class SyncException extends AppException {
   const SyncException(super.message, [super.cause]);
 
-  static const conflictDetected = SyncException('Data conflict detected during sync');
-  static const networkUnavailable = SyncException('Network unavailable for sync');
+  static const conflictDetected =
+      SyncException('Data conflict detected during sync');
+  static const networkUnavailable =
+      SyncException('Network unavailable for sync');
   static const queueFull = SyncException('Sync queue is full');
   static const invalidOperation = SyncException('Invalid sync operation');
 }
@@ -81,13 +89,15 @@ final class WorkoutException extends AppException {
 
   static const invalidExercise = WorkoutException('Invalid exercise specified');
   static const sessionNotActive = WorkoutException('No active workout session');
-  static const trackerUnavailable = WorkoutException('Workout tracker unavailable');
+  static const trackerUnavailable =
+      WorkoutException('Workout tracker unavailable');
 }
 
 final class RecoveryException extends AppException {
   const RecoveryException(super.message, [super.cause]);
 
-  static const insufficientData = RecoveryException('Insufficient data for recovery calculation');
+  static const insufficientData =
+      RecoveryException('Insufficient data for recovery calculation');
   static const invalidMetric = RecoveryException('Invalid recovery metric');
 }
 
@@ -95,7 +105,9 @@ final class RecoveryException extends AppException {
 final class SystemException extends AppException {
   const SystemException(super.message, [super.cause]);
 
-  static const initializationFailed = SystemException('System initialization failed');
-  static const serviceUnavailable = SystemException('Required service unavailable');
+  static const initializationFailed =
+      SystemException('System initialization failed');
+  static const serviceUnavailable =
+      SystemException('Required service unavailable');
   static const configurationError = SystemException('Configuration error');
 }

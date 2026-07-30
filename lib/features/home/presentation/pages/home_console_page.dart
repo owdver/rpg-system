@@ -431,7 +431,8 @@ class _MissionBriefCard extends StatelessWidget {
                         vertical: AppSpacing.xs,
                       ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                         color: _getDifficultyColor(mission.difficulty)
                             .withOpacity(0.2),
                       ),
@@ -450,7 +451,8 @@ class _MissionBriefCard extends StatelessWidget {
                         vertical: AppSpacing.xs,
                       ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                         color: AppColors.accentViolet.withOpacity(0.2),
                       ),
                       child: Text(

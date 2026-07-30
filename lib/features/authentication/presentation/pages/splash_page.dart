@@ -56,10 +56,10 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
   Future<void> _initializeAndNavigate() async {
     await ref.read(authNotifierProvider.notifier).initialize();
-    
+
     // Wait for animation to complete minimum display time
     await Future.delayed(const Duration(milliseconds: 1800));
-    
+
     if (mounted) {
       final authState = ref.read(authNotifierProvider);
       if (authState.status == AuthStatus.authenticated) {
@@ -126,7 +126,8 @@ class _SplashPageState extends ConsumerState<SplashPage>
                             glowIntensity: 0.4,
                             child: Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+                                borderRadius:
+                                    BorderRadius.circular(AppSpacing.radiusXl),
                                 gradient: LinearGradient(
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
@@ -169,7 +170,8 @@ class _SplashPageState extends ConsumerState<SplashPage>
                             child: LinearProgressIndicator(
                               backgroundColor: AppColors.surfaceGlass,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.accentCyan.withOpacity(_fadeAnimation.value),
+                                AppColors.accentCyan
+                                    .withOpacity(_fadeAnimation.value),
                               ),
                             ),
                           ),

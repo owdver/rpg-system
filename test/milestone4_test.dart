@@ -65,7 +65,8 @@ void main() {
       final response = coach.evaluateDaily();
 
       // Recovery at 15% should trigger high priority
-      expect(response.priority.index, greaterThanOrEqualTo(CoachPriority.normal.index));
+      expect(response.priority.index,
+          greaterThanOrEqualTo(CoachPriority.normal.index));
     });
 
     test('Coach generates weekly report', () {
@@ -76,14 +77,18 @@ void main() {
             id: 'w1',
             type: WorkoutType.strength,
             startTime: DateTime.now().subtract(const Duration(days: 1)),
-            endTime: DateTime.now().subtract(const Duration(days: 1)).add(const Duration(minutes: 45)),
+            endTime: DateTime.now()
+                .subtract(const Duration(days: 1))
+                .add(const Duration(minutes: 45)),
             status: WorkoutStatus.completed,
           ),
           WorkoutSession(
             id: 'w2',
             type: WorkoutType.cardio,
             startTime: DateTime.now().subtract(const Duration(days: 2)),
-            endTime: DateTime.now().subtract(const Duration(days: 2)).add(const Duration(minutes: 30)),
+            endTime: DateTime.now()
+                .subtract(const Duration(days: 2))
+                .add(const Duration(minutes: 30)),
             status: WorkoutStatus.completed,
           ),
         ],
@@ -156,10 +161,12 @@ void main() {
     test('Items have correct rarity', () {
       final state = InventoryState.initial();
 
-      final commonItems = state.items.where((i) => i.rarity == ItemRarity.common);
+      final commonItems =
+          state.items.where((i) => i.rarity == ItemRarity.common);
       final rareItems = state.items.where((i) => i.rarity == ItemRarity.rare);
       final epicItems = state.items.where((i) => i.rarity == ItemRarity.epic);
-      final legendaryItems = state.items.where((i) => i.rarity == ItemRarity.legendary);
+      final legendaryItems =
+          state.items.where((i) => i.rarity == ItemRarity.legendary);
 
       expect(commonItems.isNotEmpty, true);
       expect(rareItems.isNotEmpty, true);

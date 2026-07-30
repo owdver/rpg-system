@@ -189,7 +189,8 @@ class MissionBriefWindow extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                if (timeRemaining != null) _TimeRemainingDisplay(time: timeRemaining!),
+                if (timeRemaining != null)
+                  _TimeRemainingDisplay(time: timeRemaining!),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
@@ -232,7 +233,8 @@ class MissionBriefWindow extends StatelessWidget {
                       onPressed: onViewDetails,
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: AppColors.borderSubtle),
-                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                        padding:
+                            const EdgeInsets.symmetric(vertical: AppSpacing.md),
                       ),
                       child: Text(
                         'DETAILS',
@@ -252,7 +254,8 @@ class MissionBriefWindow extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: difficulty.color,
                         foregroundColor: AppColors.backgroundPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                        padding:
+                            const EdgeInsets.symmetric(vertical: AppSpacing.md),
                       ),
                       child: Text(
                         'ACCEPT',
@@ -294,7 +297,8 @@ class _DifficultyBadge extends StatelessWidget {
       ),
       child: Text(
         difficulty.label,
-        style: (small ? AppTypography.labelSmall : AppTypography.labelMedium).copyWith(
+        style: (small ? AppTypography.labelSmall : AppTypography.labelMedium)
+            .copyWith(
           color: difficulty.color,
           fontSize: small ? 10 : null,
         ),
@@ -369,9 +373,11 @@ class _TimeRemainingDisplay extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-        color: (isUrgent ? AppColors.accentError : AppColors.accentCyan).withOpacity(0.15),
+        color: (isUrgent ? AppColors.accentError : AppColors.accentCyan)
+            .withOpacity(0.15),
         border: Border.all(
-          color: (isUrgent ? AppColors.accentError : AppColors.accentCyan).withOpacity(0.4),
+          color: (isUrgent ? AppColors.accentError : AppColors.accentCyan)
+              .withOpacity(0.4),
         ),
       ),
       child: Row(

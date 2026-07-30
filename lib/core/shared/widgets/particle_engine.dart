@@ -63,8 +63,10 @@ class _ParticleEngineState extends State<ParticleEngine>
     return _Particle(
       x: _random.nextDouble(),
       y: _random.nextDouble(),
-      size: widget.minSize + _random.nextDouble() * (widget.maxSize - widget.minSize),
-      speed: widget.minSpeed + _random.nextDouble() * (widget.maxSpeed - widget.minSpeed),
+      size: widget.minSize +
+          _random.nextDouble() * (widget.maxSize - widget.minSize),
+      speed: widget.minSpeed +
+          _random.nextDouble() * (widget.maxSpeed - widget.minSpeed),
       opacity: 0.3 + _random.nextDouble() * 0.5,
       angle: _random.nextDouble() * 2 * pi,
     );

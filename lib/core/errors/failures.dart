@@ -115,7 +115,8 @@ final class FailureInfo extends Equatable {
   String get message => exception.message;
 
   @override
-  List<Object?> get props => [exception, context, timestamp, recoverySuggestion];
+  List<Object?> get props =>
+      [exception, context, timestamp, recoverySuggestion];
 
   /// Creates a FailureInfo from an AppException.
   static FailureInfo fromException(
@@ -157,7 +158,8 @@ final class FailureInfo extends Equatable {
     return FailureInfo(
       exception: StorageException('Storage error during $operation'),
       context: {'operation': operation},
-      recoverySuggestion: 'Try clearing some storage space or restarting the app.',
+      recoverySuggestion:
+          'Try clearing some storage space or restarting the app.',
     );
   }
 }

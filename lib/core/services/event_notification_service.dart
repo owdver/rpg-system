@@ -85,7 +85,8 @@ class EventNotificationService {
 }
 
 /// Provider for event notification service.
-final eventNotificationServiceProvider = Provider<EventNotificationService>((ref) {
+final eventNotificationServiceProvider =
+    Provider<EventNotificationService>((ref) {
   final service = EventNotificationService(
     hapticManager: ref.watch(hapticManagerProvider),
     soundManager: ref.watch(soundManagerProvider),
@@ -96,7 +97,8 @@ final eventNotificationServiceProvider = Provider<EventNotificationService>((ref
 
 /// System message toast overlay manager.
 class SystemMessageManager {
-  static final SystemMessageManager _instance = SystemMessageManager._internal();
+  static final SystemMessageManager _instance =
+      SystemMessageManager._internal();
   factory SystemMessageManager() => _instance;
   SystemMessageManager._internal();
 
@@ -313,7 +315,8 @@ class _SystemMessageToastState extends State<_SystemMessageToast>
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: Color(0xFF9FB2C8), size: 18),
+                    icon: const Icon(Icons.close,
+                        color: Color(0xFF9FB2C8), size: 18),
                     onPressed: _dismiss,
                   ),
                 ],

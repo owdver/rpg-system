@@ -97,9 +97,8 @@ class Achievement {
   final DateTime? unlockedAt;
   final bool isSecret;
 
-  double get progress => targetValue > 0
-      ? (currentValue / targetValue).clamp(0.0, 1.0)
-      : 0.0;
+  double get progress =>
+      targetValue > 0 ? (currentValue / targetValue).clamp(0.0, 1.0) : 0.0;
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -374,9 +373,8 @@ class AchievementState {
         [];
 
     // Initialize with catalog if empty
-    final achievements = achievementsList.isEmpty
-        ? AchievementCatalog.all
-        : achievementsList;
+    final achievements =
+        achievementsList.isEmpty ? AchievementCatalog.all : achievementsList;
 
     return AchievementState(
       achievements: achievements,

@@ -258,7 +258,8 @@ class OnboardingState {
   final bool hasEnabledNotifications;
   final bool hasConnectedHealth;
 
-  int get totalSteps => 7; // Welcome, Goal, Experience, Frequency, Types, Baseline, Finalize
+  int get totalSteps =>
+      7; // Welcome, Goal, Experience, Frequency, Types, Baseline, Finalize
 
   double get progress => (currentStep + 1) / totalSteps;
 
@@ -282,10 +283,12 @@ class OnboardingState {
       selectedGoal: selectedGoal ?? this.selectedGoal,
       selectedExperience: selectedExperience ?? this.selectedExperience,
       selectedFrequency: selectedFrequency ?? this.selectedFrequency,
-      selectedTrainingTypes: selectedTrainingTypes ?? this.selectedTrainingTypes,
+      selectedTrainingTypes:
+          selectedTrainingTypes ?? this.selectedTrainingTypes,
       baselineReadiness: baselineReadiness ?? this.baselineReadiness,
       hasAcceptedTerms: hasAcceptedTerms ?? this.hasAcceptedTerms,
-      hasEnabledNotifications: hasEnabledNotifications ?? this.hasEnabledNotifications,
+      hasEnabledNotifications:
+          hasEnabledNotifications ?? this.hasEnabledNotifications,
       hasConnectedHealth: hasConnectedHealth ?? this.hasConnectedHealth,
     );
   }
@@ -365,6 +368,7 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
 }
 
 /// Provider for onboarding state.
-final onboardingProvider = StateNotifierProvider<OnboardingNotifier, OnboardingState>(
+final onboardingProvider =
+    StateNotifierProvider<OnboardingNotifier, OnboardingState>(
   (ref) => OnboardingNotifier(),
 );

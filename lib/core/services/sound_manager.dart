@@ -64,13 +64,15 @@ class SoundManager {
   Future<void> playUI() => play(SoundCategory.buttonInteraction);
 
   /// Plays recovery notification.
-  Future<void> playRecoveryNotification() => play(SoundCategory.recoveryNotification);
+  Future<void> playRecoveryNotification() =>
+      play(SoundCategory.recoveryNotification);
 
   /// Plays scan reveal sound effect.
   Future<void> playScanReveal() => play(SoundCategory.scanReveal);
 
   /// Plays dissolve transition sound.
-  Future<void> playDissolveTransition() => play(SoundCategory.dissolveTransition);
+  Future<void> playDissolveTransition() =>
+      play(SoundCategory.dissolveTransition);
 
   /// Plays pulse burst sound.
   Future<void> playPulseBurst() => play(SoundCategory.pulseBurst);

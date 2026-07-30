@@ -115,7 +115,8 @@ class _SystemMessageToastState extends State<SystemMessageToast>
       animation: _controller,
       builder: (context, child) {
         return Transform.translate(
-          offset: Offset(0, MediaQuery.of(context).size.height * _slideAnimation.value * 0.1),
+          offset: Offset(0,
+              MediaQuery.of(context).size.height * _slideAnimation.value * 0.1),
           child: Opacity(
             opacity: _fadeAnimation.value,
             child: child,
@@ -127,11 +128,15 @@ class _SystemMessageToastState extends State<SystemMessageToast>
         child: HolographicContainer(
           borderRadius: AppSpacing.radiusMd,
           glowColor: color,
-          glowIntensity: widget.message.priority == SystemMessagePriority.critical ? 0.5 : 0.2,
+          glowIntensity:
+              widget.message.priority == SystemMessagePriority.critical
+                  ? 0.5
+                  : 0.2,
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: widget.message.actionKey != null ? widget.onAction : _dismiss,
+              onTap:
+                  widget.message.actionKey != null ? widget.onAction : _dismiss,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.md),
@@ -142,7 +147,8 @@ class _SystemMessageToastState extends State<SystemMessageToast>
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                         color: color.withOpacity(0.2),
                       ),
                       child: Icon(
@@ -168,8 +174,10 @@ class _SystemMessageToastState extends State<SystemMessageToast>
                                   letterSpacing: 1,
                                 ),
                               ),
-                              if (widget.message.priority == SystemMessagePriority.high ||
-                                  widget.message.priority == SystemMessagePriority.critical) ...[
+                              if (widget.message.priority ==
+                                      SystemMessagePriority.high ||
+                                  widget.message.priority ==
+                                      SystemMessagePriority.critical) ...[
                                 const SizedBox(width: AppSpacing.xs),
                                 Container(
                                   padding: const EdgeInsets.symmetric(

@@ -120,7 +120,7 @@ abstract final class AppAnimationSpecs {
 // Extension for animation utilities
 extension AnimationExtensions on Animation<double> {
   Animation<double> get reversed => ReverseAnimation(this);
-  
+
   Animation<double> withCurve(Curve curve) {
     return CurvedAnimation(parent: this, curve: curve);
   }

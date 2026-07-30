@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/constants.dart';
 
-
 /// Settings page with system preferences and integrations.
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -40,7 +39,8 @@ class SettingsPage extends ConsumerWidget {
 
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                   children: [
                     // Profile section
                     _SettingsSection(
@@ -282,7 +282,8 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? AppColors.accentError : AppColors.textSecondary;
+    final color =
+        isDestructive ? AppColors.accentError : AppColors.textSecondary;
 
     return Material(
       color: Colors.transparent,

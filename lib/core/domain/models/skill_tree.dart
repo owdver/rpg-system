@@ -150,7 +150,8 @@ class SkillNode {
           {},
       xpBonus: (json['xpBonus'] as num?)?.toDouble() ?? 0,
       recoveryBonus: (json['recoveryBonus'] as num?)?.toDouble() ?? 0,
-      requiredSkillIds: (json['requiredSkillIds'] as List<dynamic>?)?.cast<String>() ?? [],
+      requiredSkillIds:
+          (json['requiredSkillIds'] as List<dynamic>?)?.cast<String>() ?? [],
       requiredLevel: json['requiredLevel'] as int? ?? 1,
       requiredStats: (json['requiredStats'] as Map<String, dynamic>?)
               ?.map((k, v) => MapEntry(k, v as int)) ??
@@ -467,8 +468,10 @@ class SkillTreeState {
     return skills.where((s) => s.isPurchased).toList();
   }
 
-  double get totalXpBonus => getPurchasedSkills().fold(0.0, (sum, s) => sum + s.xpBonus);
-  double get totalRecoveryBonus => getPurchasedSkills().fold(0.0, (sum, s) => sum + s.recoveryBonus);
+  double get totalXpBonus =>
+      getPurchasedSkills().fold(0.0, (sum, s) => sum + s.xpBonus);
+  double get totalRecoveryBonus =>
+      getPurchasedSkills().fold(0.0, (sum, s) => sum + s.recoveryBonus);
 
   SkillTreeState copyWith({
     List<SkillNode>? skills,
@@ -485,7 +488,8 @@ class SkillTreeState {
   Map<String, dynamic> toJson() => {
         'skills': skills.map((s) => s.toJson()).toList(),
         'totalSpent': totalSpent,
-        'categoryUnlocks': categoryUnlocks.map((k, v) => MapEntry(k.index.toString(), v)),
+        'categoryUnlocks':
+            categoryUnlocks.map((k, v) => MapEntry(k.index.toString(), v)),
       };
 
   factory SkillTreeState.fromJson(Map<String, dynamic> json) {
@@ -496,8 +500,9 @@ class SkillTreeState {
     return SkillTreeState(
       skills: skillsList ?? SkillTreeCatalog.allSkills,
       totalSpent: json['totalSpent'] as int? ?? 0,
-      categoryUnlocks: (json['categoryUnlocks'] as Map<String, dynamic>?)
-              ?.map((k, v) => MapEntry(SkillCategory.values[int.parse(k)], v as bool)) ??
+      categoryUnlocks: (json['categoryUnlocks'] as Map<String, dynamic>?)?.map(
+              (k, v) =>
+                  MapEntry(SkillCategory.values[int.parse(k)], v as bool)) ??
           {},
     );
   }

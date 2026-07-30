@@ -31,7 +31,8 @@ class HomePage extends ConsumerWidget {
                   floating: true,
                   backgroundColor: Colors.transparent,
                   elevation: 0,
-                  title: _SystemHeader(userName: user?.displayName ?? 'Operative'),
+                  title:
+                      _SystemHeader(userName: user?.displayName ?? 'Operative'),
                   actions: [
                     _NotificationButton(
                       onTap: () {
@@ -62,7 +63,8 @@ class HomePage extends ConsumerWidget {
                       // Mission brief
                       MissionBriefWindow(
                         title: 'Daily Endurance Challenge',
-                        description: 'Complete a 30-minute cardio session to earn bonus XP.',
+                        description:
+                            'Complete a 30-minute cardio session to earn bonus XP.',
                         difficulty: MissionDifficulty.medium,
                         xpReward: 250,
                         timeRemaining: const Duration(hours: 12),
@@ -536,7 +538,8 @@ class _CurrentMissionSection extends StatelessWidget {
                         vertical: AppSpacing.xs,
                       ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                         color: AppColors.accentWarning.withOpacity(0.2),
                         border: Border.all(
                           color: AppColors.accentWarning.withOpacity(0.5),

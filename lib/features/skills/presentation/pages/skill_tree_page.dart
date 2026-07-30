@@ -43,7 +43,8 @@ class _SkillTreePageState extends ConsumerState<SkillTreePage>
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Row(
                   children: [
-                    const Icon(Icons.account_tree, color: AppColors.accentWarning),
+                    const Icon(Icons.account_tree,
+                        color: AppColors.accentWarning),
                     const SizedBox(width: AppSpacing.md),
                     Text(
                       'SKILL TREE',
@@ -182,7 +183,8 @@ class _SkillNodeCard extends StatelessWidget {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                         color: _getGlowColor().withOpacity(0.2),
                       ),
                       child: Center(
@@ -215,8 +217,10 @@ class _SkillNodeCard extends StatelessWidget {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                                    color: AppColors.accentSuccess.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(
+                                        AppSpacing.radiusSm),
+                                    color: AppColors.accentSuccess
+                                        .withOpacity(0.2),
                                   ),
                                   child: Text(
                                     'OWNED',
@@ -245,7 +249,8 @@ class _SkillNodeCard extends StatelessWidget {
                           vertical: AppSpacing.xs,
                         ),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusSm),
                           color: AppColors.accentCyan.withOpacity(0.2),
                         ),
                         child: Row(
@@ -275,7 +280,9 @@ class _SkillNodeCard extends StatelessWidget {
                     color: AppColors.textSecondary,
                   ),
                 ),
-                if (skill.statBonus.isNotEmpty || skill.xpBonus > 0 || skill.recoveryBonus > 0) ...[
+                if (skill.statBonus.isNotEmpty ||
+                    skill.xpBonus > 0 ||
+                    skill.recoveryBonus > 0) ...[
                   const SizedBox(height: AppSpacing.md),
                   Wrap(
                     spacing: AppSpacing.sm,
@@ -292,7 +299,8 @@ class _SkillNodeCard extends StatelessWidget {
                         ),
                       if (skill.recoveryBonus > 0)
                         _BonusChip(
-                          label: 'Recovery+${(skill.recoveryBonus * 100).toInt()}%',
+                          label:
+                              'Recovery+${(skill.recoveryBonus * 100).toInt()}%',
                           color: AppColors.accentBlue,
                         ),
                     ],

@@ -234,7 +234,8 @@ class RecoveryState {
       lastUpdated: json['lastUpdated'] != null
           ? DateTime.parse(json['lastUpdated'] as String)
           : null,
-      recommendation: json['recommendation'] as String? ?? 'Normal training approved.',
+      recommendation:
+          json['recommendation'] as String? ?? 'Normal training approved.',
     );
   }
 }

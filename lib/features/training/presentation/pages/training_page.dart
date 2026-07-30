@@ -339,14 +339,16 @@ class _RecommendedWorkoutCard extends StatelessWidget {
                     const SizedBox(height: AppSpacing.xs),
                     Row(
                       children: [
-                        Icon(Icons.timer, size: 14, color: AppColors.textSecondary),
+                        Icon(Icons.timer,
+                            size: 14, color: AppColors.textSecondary),
                         const SizedBox(width: 4),
                         Text(
                           '$duration min',
                           style: AppTypography.bodySmall,
                         ),
                         const SizedBox(width: AppSpacing.md),
-                        Icon(Icons.list, size: 14, color: AppColors.textSecondary),
+                        Icon(Icons.list,
+                            size: 14, color: AppColors.textSecondary),
                         const SizedBox(width: 4),
                         Text(
                           '$exercises exercises',
@@ -359,7 +361,8 @@ class _RecommendedWorkoutCard extends StatelessWidget {
               ),
               Column(
                 children: [
-                  Text(xp, style: AppTypography.numericSmall.copyWith(color: color)),
+                  Text(xp,
+                      style: AppTypography.numericSmall.copyWith(color: color)),
                   const SizedBox(height: AppSpacing.xs),
                   const Icon(
                     Icons.play_circle_outline,

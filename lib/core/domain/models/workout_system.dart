@@ -237,7 +237,8 @@ class WorkoutSession {
   }
 
   int get totalSets {
-    return exercises.fold(0, (sum, e) => sum + e.sets.where((s) => s.isCompleted).length);
+    return exercises.fold(
+        0, (sum, e) => sum + e.sets.where((s) => s.isCompleted).length);
   }
 
   int get totalReps {
@@ -252,7 +253,11 @@ class WorkoutSession {
     final qualityMultiplier = (qualityScore / 100).clamp(0.5, 1.5);
     final durationMinutes = duration.inMinutes;
 
-    return (baseXP * typeMultiplier * intensityMultiplier * qualityMultiplier * (durationMinutes / 30))
+    return (baseXP *
+            typeMultiplier *
+            intensityMultiplier *
+            qualityMultiplier *
+            (durationMinutes / 30))
         .round()
         .clamp(10, 1000);
   }

@@ -463,7 +463,8 @@ class InventoryState {
 
   Map<String, dynamic> toJson() => {
         'items': items.map((i) => i.toJson()).toList(),
-        'equippedItems': equippedItems.map((k, v) => MapEntry(k.index.toString(), v)),
+        'equippedItems':
+            equippedItems.map((k, v) => MapEntry(k.index.toString(), v)),
         'totalItems': totalItems,
         'unlockedItems': unlockedItems,
       };
@@ -473,8 +474,10 @@ class InventoryState {
         ?.map((i) => InventoryItem.fromJson(i as Map<String, dynamic>))
         .toList();
 
-    final equippedMap = (json['equippedItems'] as Map<String, dynamic>?)
-        ?.map((k, v) => MapEntry(InventoryItemType.values[int.parse(k)], v as String?)) ?? {};
+    final equippedMap = (json['equippedItems'] as Map<String, dynamic>?)?.map(
+            (k, v) => MapEntry(
+                InventoryItemType.values[int.parse(k)], v as String?)) ??
+        {};
 
     return InventoryState(
       items: itemsList ?? InventoryCatalog.allItems,

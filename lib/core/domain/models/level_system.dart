@@ -294,7 +294,8 @@ class ProgressionState {
           )
         : null;
 
-    final unlockedIds = (json['unlockedTitles'] as List<dynamic>?)?.cast<String>() ?? [];
+    final unlockedIds =
+        (json['unlockedTitles'] as List<dynamic>?)?.cast<String>() ?? [];
     final unlocked = unlockedIds
         .map((id) => Title.defaultTitles.where((t) => t.id == id))
         .expand((t) => t)

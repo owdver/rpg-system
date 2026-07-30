@@ -76,11 +76,13 @@ class GameEngine extends StateNotifier<GameState> {
 
     final xpState = _persistence.loadXPState() ?? const XPState();
     final userStats = _persistence.loadUserStats() ?? const UserStats();
-    final progression = _persistence.loadProgression() ?? const ProgressionState();
+    final progression =
+        _persistence.loadProgression() ?? const ProgressionState();
     final recovery = _persistence.loadRecoveryState() ?? const RecoveryState();
-    final achievements = _persistence.loadAchievements() ?? AchievementState(
-      achievements: AchievementCatalog.all,
-    );
+    final achievements = _persistence.loadAchievements() ??
+        AchievementState(
+          achievements: AchievementCatalog.all,
+        );
     final missions = _persistence.loadMissions();
     final activeMission = _persistence.loadActiveMission();
     final workoutHistory = _persistence.loadWorkoutHistory();
@@ -123,7 +125,9 @@ class GameEngine extends StateNotifier<GameState> {
   }
 
   // XP Management
-  Future<List<SystemEvent>> addXP(int amount, XPSource source, {
+  Future<List<SystemEvent>> addXP(
+    int amount,
+    XPSource source, {
     String? missionId,
     String? workoutId,
   }) async {
@@ -132,7 +136,8 @@ class GameEngine extends StateNotifier<GameState> {
     // Calculate streak bonuses
     int bonusXP = 0;
 
-    if (source == XPSource.workoutCompletion || source == XPSource.missionCompletion) {
+    if (source == XPSource.workoutCompletion ||
+        source == XPSource.missionCompletion) {
       // Daily streak bonus
       if (state.xpState.streakDays >= 7) {
         bonusXP += (amount * 0.2).round();
@@ -142,8 +147,8 @@ class GameEngine extends StateNotifier<GameState> {
     }
 
     final totalXP = amount + bonusXP;
-    final (newXPState, leveledUp) = state.xpState.addXP(totalXP, source,
-      missionId: missionId, workoutId: workoutId);
+    final (newXPState, leveledUp) = state.xpState
+        .addXP(totalXP, source, missionId: missionId, workoutId: workoutId);
 
     state = state.copyWith(xpState: newXPState);
 
@@ -194,7 +199,8 @@ class GameEngine extends StateNotifier<GameState> {
 
     // Calculate XP
     final xpEarned = workout.calculateXP();
-    final xpEvents = await addXP(xpEarned, XPSource.workoutCompletion, workoutId: workout.id);
+    final xpEvents = await addXP(xpEarned, XPSource.workoutCompletion,
+        workoutId: workout.id);
     events.addAll(xpEvents);
 
     // Update stats based on workout type
@@ -268,7 +274,8 @@ class GameEngine extends StateNotifier<GameState> {
     if (mission.isComplete) {
       // Award XP
       final xpReward = mission.calculateXPReward();
-      final xpEvents = await addXP(xpReward, XPSource.missionCompletion, missionId: missionId);
+      final xpEvents = await addXP(xpReward, XPSource.missionCompletion,
+          missionId: missionId);
       events.addAll(xpEvents);
 
       // Update mission status
@@ -282,7 +289,8 @@ class GameEngine extends StateNotifier<GameState> {
 
       state = state.copyWith(
         missions: updatedMissions,
-        activeMission: state.activeMission?.id == missionId ? null : state.activeMission,
+        activeMission:
+            state.activeMission?.id == missionId ? null : state.activeMission,
       );
 
       // Mission complete event
@@ -338,7 +346,8 @@ class GameEngine extends StateNotifier<GameState> {
     }
   }
 
-  Future<void> _updateMissionObjective(MissionObjectiveType type, int increment) async {
+  Future<void> _updateMissionObjective(
+      MissionObjectiveType type, int increment) async {
     if (state.activeMission == null) return;
 
     final objectives = state.activeMission!.objectives.map((obj) {
@@ -352,10 +361,12 @@ class GameEngine extends StateNotifier<GameState> {
       return obj;
     }).toList();
 
-    final updatedMission = state.activeMission!.copyWith(objectives: objectives);
+    final updatedMission =
+        state.activeMission!.copyWith(objectives: objectives);
 
     // Check if mission is now complete
-    if (updatedMission.isComplete && state.activeMission!.status == MissionStatus.active) {
+    if (updatedMission.isComplete &&
+        state.activeMission!.status == MissionStatus.active) {
       await completeMission(updatedMission.id);
     }
 
@@ -406,19 +417,22 @@ class GameEngine extends StateNotifier<GameState> {
         case 'workout_10':
           newCurrent = workoutCount;
           if (newCurrent >= 10) {
-            return _unlockAchievement(a.copyWith(currentValue: newCurrent), events);
+            return _unlockAchievement(
+                a.copyWith(currentValue: newCurrent), events);
           }
           return a.copyWith(currentValue: newCurrent);
         case 'workout_50':
           newCurrent = workoutCount;
           if (newCurrent >= 50) {
-            return _unlockAchievement(a.copyWith(currentValue: newCurrent), events);
+            return _unlockAchievement(
+                a.copyWith(currentValue: newCurrent), events);
           }
           return a.copyWith(currentValue: newCurrent);
         case 'workout_100':
           newCurrent = workoutCount;
           if (newCurrent >= 100) {
-            return _unlockAchievement(a.copyWith(currentValue: newCurrent), events);
+            return _unlockAchievement(
+                a.copyWith(currentValue: newCurrent), events);
           }
           return a.copyWith(currentValue: newCurrent);
       }
@@ -504,14 +518,16 @@ class GameEngine extends StateNotifier<GameState> {
     return events;
   }
 
-  Achievement _unlockAchievement(Achievement achievement, List<SystemEvent> events) {
+  Achievement _unlockAchievement(
+      Achievement achievement, List<SystemEvent> events) {
     final unlocked = achievement.copyWith(
       isUnlocked: true,
       unlockedAt: DateTime.now(),
     );
 
     // Add achievement event
-    final event = EventFactory.achievementUnlocked(achievement.id, achievement.name);
+    final event =
+        EventFactory.achievementUnlocked(achievement.id, achievement.name);
     _addEvent(event);
     events.add(event);
     _eventController.add(event);
