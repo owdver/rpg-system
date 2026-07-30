@@ -201,12 +201,10 @@ jobs:
         run: |
           if [[ -n "$KEYSTORE_BASE64" && -n "$KEYSTORE_PASSWORD" && -n "$KEY_ALIAS" && -n "$KEY_PASSWORD" ]]; then
             echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.jks
-            cat > android/key.properties << EOF
-            storePassword=$KEYSTORE_PASSWORD
-            keyPassword=$KEY_PASSWORD
-            keyAlias=$KEY_ALIAS
-            storeFile=release.jks
-            EOF
+            echo "storePassword=$KEYSTORE_PASSWORD" > android/key.properties
+            echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
+            echo "keyAlias=$KEY_ALIAS" >> android/key.properties
+            echo "storeFile=release.jks" >> android/key.properties
             echo "Signing configured for release build"
           else
             echo "Signing secrets not configured - build will use debug signing"
@@ -270,12 +268,10 @@ jobs:
         run: |
           if [[ -n "$KEYSTORE_BASE64" && -n "$KEYSTORE_PASSWORD" && -n "$KEY_ALIAS" && -n "$KEY_PASSWORD" ]]; then
             echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.jks
-            cat > android/key.properties << EOF
-            storePassword=$KEYSTORE_PASSWORD
-            keyPassword=$KEY_PASSWORD
-            keyAlias=$KEY_ALIAS
-            storeFile=release.jks
-            EOF
+            echo "storePassword=$KEYSTORE_PASSWORD" > android/key.properties
+            echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
+            echo "keyAlias=$KEY_ALIAS" >> android/key.properties
+            echo "storeFile=release.jks" >> android/key.properties
             echo "Signing configured for release build"
           else
             echo "Signing secrets not configured - build will use debug signing"
@@ -339,12 +335,10 @@ jobs:
         run: |
           if [[ -n "$KEYSTORE_BASE64" && -n "$KEYSTORE_PASSWORD" && -n "$KEY_ALIAS" && -n "$KEY_PASSWORD" ]]; then
             echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.jks
-            cat > android/key.properties << EOF
-            storePassword=$KEYSTORE_PASSWORD
-            keyPassword=$KEY_PASSWORD
-            keyAlias=$KEY_ALIAS
-            storeFile=release.jks
-            EOF
+            echo "storePassword=$KEYSTORE_PASSWORD" > android/key.properties
+            echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
+            echo "keyAlias=$KEY_ALIAS" >> android/key.properties
+            echo "storeFile=release.jks" >> android/key.properties
             echo "Signing configured for release build"
           else
             echo "Signing secrets not configured - build will use debug signing"
