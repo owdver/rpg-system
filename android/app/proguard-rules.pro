@@ -63,7 +63,10 @@
 }
 
 # Google Play Core Library
+# These classes are referenced by Flutter's PlayStoreSplitApplication but are optional
+# for deferred components loading. They are not needed at runtime for standard builds.
 -keep class com.google.android.play.core.** { *; }
+-dontwarn com.google.android.play.core.**
 
 # OkHttp (referenced by Firebase/Play Services)
 -keep class com.squareup.okhttp.** { *; }
