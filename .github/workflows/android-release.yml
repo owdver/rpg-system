@@ -16,7 +16,7 @@ on:
           - preview
 
 env:
-  flutter_version: '3.27.0'
+  flutter_version: '3.44.0'
   dart_version: '3.6.0'
 
 jobs:
