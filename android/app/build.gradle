@@ -47,8 +47,11 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            // Minification disabled due to R8 issues with Flutter's Play Core dependencies
+            // The PlayStoreSplitApplication references Play Core classes that are optional
+            // at runtime. This is a known Flutter issue with R8 full mode.
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             if (keystoreProperties['storeFile']) {
                 signingConfig signingConfigs.release
