@@ -10,7 +10,6 @@ class AccessibilityService {
 
   /// Whether reduced motion is preferred.
   bool get prefersReducedMotion {
-    final platformBrightness = SchedulerBinding.instance.platformDispatcher.platformBrightness;
     return MediaQueryData.fromView(View.of(WidgetsBinding.instance.rootElement!))
         .disableAnimations;
   }
