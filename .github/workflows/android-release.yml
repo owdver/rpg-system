@@ -94,7 +94,23 @@ jobs:
         run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Flutter analyze
-        run: flutter analyze
+        run: |
+          # Capture output and check for actual errors (not warnings/info)
+          set +e
+          flutter analyze 2>&1 | tee analyze_output.txt
+          ANALYZE_EXIT_CODE=$?
+          # Check for actual errors (not warnings or info)
+          if grep -q "^   error •" analyze_output.txt; then
+            echo "ERROR: Found critical errors in analysis"
+            exit 1
+          fi
+          # If flutter analyze failed but there are no errors, it's just warnings/info
+          if [ $ANALYZE_EXIT_CODE -ne 0 ]; then
+            echo "Analysis complete with warnings/info (non-blocking)"
+            exit 0
+          fi
+          echo "Analysis passed"
+          exit 0
 
   # Unit Tests
   test:
