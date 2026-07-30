@@ -37,7 +37,7 @@ dependencies:
   path: ^1.9.0
 
   # Health Integration
-  health: ^9.0.0
+  health: ^13.3.1
 
   # UI & Animation
   cupertino_icons: ^1.0.8
