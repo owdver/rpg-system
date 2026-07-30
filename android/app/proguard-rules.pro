@@ -61,3 +61,24 @@
     public static int d(...);
     public static int i(...);
 }
+
+# Google Play Core Library
+-keep class com.google.android.play.core.** { *; }
+
+# OkHttp (referenced by Firebase/Play Services)
+-keep class com.squareup.okhttp.** { *; }
+-keep interface com.squareup.okhttp.** { *; }
+-dontwarn com.squareup.okhttp.**
+
+# gRPC OkHttp
+-keep class io.grpc.okhttp.** { *; }
+-keep interface io.grpc.okhttp.** { *; }
+-dontwarn io.grpc.okhttp.**
+
+# Guava (referenced by Play Services)
+-keep class com.google.common.** { *; }
+-keep interface com.google.common.** { *; }
+-dontwarn com.google.common.**
+
+# Keep Java reflection classes
+-keep class java.lang.reflect.** { *; }
