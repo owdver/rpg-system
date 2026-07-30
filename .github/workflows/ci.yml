@@ -264,6 +264,8 @@ jobs:
     name: iOS Build
     runs-on: macos-latest
     needs: [analyze, test, format, build_runner]
+    # Skip if iOS signing secrets are not configured
+    if: vars.IOS_SIGNING_CONFIGURED == 'true'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
