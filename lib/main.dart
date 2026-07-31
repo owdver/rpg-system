@@ -13,7 +13,7 @@ void main() {
 }
 
 // ============================================================================
-// STAGE 5: HOLOGRAPHIC UI
+// STAGE 6: GAME ENGINE
 // ============================================================================
 
 /// Route paths
@@ -28,6 +28,162 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Simple counter provider for testing Riverpod
 final counterProvider = StateProvider<int>((ref) => 0);
+
+// ============================================================================
+// GAME ENGINE (Simplified)
+// ============================================================================
+
+/// XP source enum
+enum XPSource { workoutCompletion, missionCompletion, achievementUnlock, dailyBonus }
+
+/// User stats model
+class UserStats {
+  final int strength;
+  final int endurance;
+  final int agility;
+  final int intelligence;
+
+  const UserStats({
+    this.strength = 10,
+    this.endurance = 10,
+    this.agility = 10,
+    this.intelligence = 10,
+  });
+
+  int get total => strength + endurance + agility + intelligence;
+
+  UserStats copyWith({
+    int? strength,
+    int? endurance,
+    int? agility,
+    int? intelligence,
+  }) {
+    return UserStats(
+      strength: strength ?? this.strength,
+      endurance: endurance ?? this.endurance,
+      agility: agility ?? this.agility,
+      intelligence: intelligence ?? this.intelligence,
+    );
+  }
+}
+
+/// XP State
+class XPState {
+  final int totalXP;
+  final int level;
+  final int currentLevelXP;
+  final int xpToNextLevel;
+  final int streakDays;
+
+  const XPState({
+    this.totalXP = 0,
+    this.level = 1,
+    this.currentLevelXP = 0,
+    this.xpToNextLevel = 100,
+    this.streakDays = 0,
+  });
+
+  double get levelProgress => currentLevelXP / xpToNextLevel;
+}
+
+/// Game state
+class GameState {
+  final XPState xpState;
+  final UserStats userStats;
+  final int missionCount;
+  final int achievementCount;
+  final bool isLoading;
+
+  const GameState({
+    this.xpState = const XPState(),
+    this.userStats = const UserStats(),
+    this.missionCount = 0,
+    this.achievementCount = 0,
+    this.isLoading = true,
+  });
+
+  GameState copyWith({
+    XPState? xpState,
+    UserStats? userStats,
+    int? missionCount,
+    int? achievementCount,
+    bool? isLoading,
+  }) {
+    return GameState(
+      xpState: xpState ?? this.xpState,
+      userStats: userStats ?? this.userStats,
+      missionCount: missionCount ?? this.missionCount,
+      achievementCount: achievementCount ?? this.achievementCount,
+      isLoading: isLoading ?? this.isLoading,
+    );
+  }
+}
+
+/// Game engine notifier
+class GameEngineNotifier extends StateNotifier<GameState> {
+  GameEngineNotifier() : super(const GameState()) {
+    _initialize();
+  }
+
+  void _initialize() {
+    // Simulate loading
+    Future.delayed(const Duration(milliseconds: 500), () {
+      state = const GameState(
+        xpState: XPState(totalXP: 1250, level: 5, currentLevelXP: 50, xpToNextLevel: 100, streakDays: 3),
+        userStats: UserStats(strength: 15, endurance: 12, agility: 18, intelligence: 14),
+        missionCount: 12,
+        achievementCount: 8,
+        isLoading: false,
+      );
+    });
+  }
+
+  void addXP(int amount) {
+    var newXP = state.xpState.currentLevelXP + amount;
+    var newLevel = state.xpState.level;
+    var newTotalXP = state.xpState.totalXP + amount;
+
+    while (newXP >= state.xpState.xpToNextLevel) {
+      newXP -= state.xpState.xpToNextLevel;
+      newLevel++;
+    }
+
+    state = state.copyWith(
+      xpState: XPState(
+        totalXP: newTotalXP,
+        level: newLevel,
+        currentLevelXP: newXP,
+        xpToNextLevel: state.xpState.xpToNextLevel,
+        streakDays: state.xpState.streakDays,
+      ),
+    );
+  }
+
+  void completeWorkout(int xpEarned) {
+    addXP(xpEarned);
+    state = state.copyWith(
+      userStats: state.userStats.copyWith(
+        strength: state.userStats.strength + 1,
+      ),
+      missionCount: state.missionCount + 1,
+    );
+  }
+}
+
+/// Game engine provider
+final gameEngineProvider = StateNotifierProvider<GameEngineNotifier, GameState>((ref) {
+  return GameEngineNotifier();
+});
+
+/// XP state provider
+final xpStateProvider = Provider<XPState>((ref) {
+  return ref.watch(gameEngineProvider).xpState;
+});
+
+/// User stats provider
+final userStatsProvider = Provider<UserStats>((ref) {
+  return ref.watch(gameEngineProvider).userStats;
+});
 
 // ============================================================================
 // DESIGN TOKENS
@@ -507,7 +663,7 @@ class _HolographicContainerState extends State<HolographicContainer>
 }
 
 // ============================================================================
-// HOME SCREEN WITH HOLOGRAPHIC UI
+// HOME SCREEN WITH HOLOGRAPHIC UI + GAME ENGINE
 // ============================================================================
 
 class HomeScreen extends ConsumerWidget {
@@ -517,6 +673,9 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final count = ref.watch(counterProvider);
     final authState = ref.watch(authNotifierProvider);
+    final gameState = ref.watch(gameEngineProvider);
+    final xpState = ref.watch(xpStateProvider);
+    final userStats = ref.watch(userStatsProvider);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundPrimary,
@@ -538,7 +697,7 @@ class HomeScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'STAGE 5',
+                  'STAGE 6',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -548,13 +707,83 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Holographic UI',
+                  'Game Engine',
                   style: TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xxl),
+                
+                // XP Progress Card
+                HolographicContainer(
+                  glowColor: AppColors.accentViolet,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Level ${xpState.level}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            Text(
+                              '${xpState.totalXP} XP',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: AppColors.accentViolet,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: xpState.levelProgress,
+                            backgroundColor: AppColors.backgroundSecondary,
+                            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentViolet),
+                            minHeight: 8,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          '${xpState.currentLevelXP} / ${xpState.xpToNextLevel} to next level',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: AppSpacing.lg),
+                
+                // Stats Grid
+                Row(
+                  children: [
+                    Expanded(child: _StatCard(title: 'STR', value: userStats.strength, color: AppColors.accentSuccess)),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(child: _StatCard(title: 'END', value: userStats.endurance, color: AppColors.accentAmber)),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(child: _StatCard(title: 'AGI', value: userStats.agility, color: AppColors.accentCyan)),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(child: _StatCard(title: 'INT', value: userStats.intelligence, color: AppColors.accentViolet)),
+                  ],
+                ),
+                
+                const SizedBox(height: AppSpacing.xxl),
+                
+                // Game Actions
                 Center(
                   child: HolographicContainer(
                     width: double.infinity,
@@ -564,22 +793,22 @@ class HomeScreen extends ConsumerWidget {
                       child: Column(
                         children: [
                           const Text(
-                            'System Test',
+                            'Mission Console',
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary,
                             ),
                           ),
-                          const SizedBox(height: AppSpacing.sm),
+                          const SizedBox(height: AppSpacing.md),
                           Text(
-                            'Welcome, ${authState.userName ?? "Agent"}!',
+                            'Missions: ${gameState.missionCount} | Achievements: ${gameState.achievementCount}',
                             style: const TextStyle(
-                              fontSize: 14,
+                              fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
                           ),
-                          const SizedBox(height: AppSpacing.xxl),
+                          const SizedBox(height: AppSpacing.xl),
                           Text(
                             '$count',
                             style: const TextStyle(
@@ -588,7 +817,7 @@ class HomeScreen extends ConsumerWidget {
                               color: AppColors.accentCyan,
                             ),
                           ),
-                          const SizedBox(height: AppSpacing.md),
+                          const SizedBox(height: AppSpacing.xs),
                           const Text(
                             'Operations Completed',
                             style: TextStyle(
@@ -601,17 +830,20 @@ class HomeScreen extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               _ActionButton(
-                                icon: Icons.add,
-                                label: 'Increment',
+                                icon: Icons.fitness_center,
+                                label: 'Train (+25 XP)',
                                 color: AppColors.accentSuccess,
-                                onPressed: () => ref.read(counterProvider.notifier).state++,
+                                onPressed: () {
+                                  ref.read(counterProvider.notifier).state++;
+                                  ref.read(gameEngineProvider.notifier).completeWorkout(25);
+                                },
                               ),
                               const SizedBox(width: AppSpacing.md),
                               _ActionButton(
-                                icon: Icons.remove,
-                                label: 'Decrement',
+                                icon: Icons.refresh,
+                                label: 'Reset',
                                 color: AppColors.accentAmber,
-                                onPressed: () => ref.read(counterProvider.notifier).state--,
+                                onPressed: () => ref.read(counterProvider.notifier).state = 0,
                               ),
                             ],
                           ),
@@ -620,27 +852,28 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
+                
                 const SizedBox(height: AppSpacing.xxl),
+                
+                // Streak Info
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: _StatusCard(
-                        title: 'Status',
-                        value: 'Online',
-                        color: AppColors.accentSuccess,
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: _StatusCard(
-                        title: 'Level',
-                        value: '05',
-                        color: AppColors.accentViolet,
+                    const Icon(Icons.local_fire_department, color: AppColors.accentAmber, size: 20),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(
+                      '${xpState.streakDays} Day Streak!',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.accentAmber,
                       ),
                     ),
                   ],
                 ),
+                
                 const Spacer(),
+                
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
@@ -659,6 +892,50 @@ class HomeScreen extends ConsumerWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  const _StatCard({
+    required this.title,
+    required this.value,
+    required this.color,
+  });
+
+  final String title;
+  final int value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return HolographicContainer(
+      glowColor: color,
+      glowIntensity: 0.15,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              '$value',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -777,7 +1054,7 @@ final router = GoRouter(
   ],
 );
 
-/// Minimal system test app with GoRouter + Riverpod + Splash + Auth + Holographic UI - Stage 5
+/// Minimal system test app with GoRouter + Riverpod + Splash + Auth + Holographic UI + Game Engine - Stage 6
 class SystemTestApp extends StatelessWidget {
   const SystemTestApp({super.key});
 
