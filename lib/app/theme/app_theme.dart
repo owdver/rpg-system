@@ -134,7 +134,7 @@ class AppTheme {
         showUnselectedLabels: true,
       );
 
-  static CardThemeData get _cardThemeData => CardThemeData(
+  static CardTheme get _cardThemeData => CardTheme(
         color: AppColors.surfaceGlass,
         elevation: 0,
         margin: EdgeInsets.zero,
@@ -331,7 +331,7 @@ class AppTheme {
         ),
       );
 
-  static DialogThemeData get _dialogThemeData => DialogThemeData(
+  static DialogTheme get _dialogThemeData => DialogTheme(
         backgroundColor: AppColors.surfaceGlassStrong,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -357,7 +357,7 @@ class AppTheme {
         dragHandleColor: AppColors.borderAccent,
       );
 
-  static TabBarThemeData get _tabBarThemeData => TabBarThemeData(
+  static TabBarTheme get _tabBarThemeData => TabBarTheme(
         labelColor: AppColors.accentCyan,
         unselectedLabelColor: AppColors.textSecondary,
         labelStyle: AppTypography.labelLarge,

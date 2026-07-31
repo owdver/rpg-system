@@ -18,6 +18,10 @@ import '../features/skills/presentation/pages/skill_tree_page.dart';
 import '../features/boss/presentation/pages/boss_arena_page.dart';
 import '../features/analytics/presentation/pages/analytics_dashboard_page.dart';
 import 'providers/auth_provider.dart';
+import '../core/services/logger_service.dart';
+
+// Router trace logger
+final _trace = LoggerService.instance.getLogger('Router');
 
 /// Route paths following the navigation spec.
 abstract final class AppRoutes {
@@ -48,9 +52,14 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 /// The application router configuration.
 final routerProvider = Provider<GoRouter>((ref) {
+  _trace.enter('routerProvider');
+  
+  _trace.enter('authNotifierProvider.watch');
   final authState = ref.watch(authNotifierProvider);
+  _trace.exit('authNotifierProvider.watch', authState.status);
 
-  return GoRouter(
+  _trace.enter('GoRouter.new');
+  final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.splash,
     debugLogDiagnostics: true,
@@ -59,37 +68,61 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.splash,
         name: 'splash',
-        builder: (context, state) => const SplashPage(),
+        builder: (context, state) {
+          _trace.enter('SplashPage.build');
+          final result = const SplashPage();
+          _trace.exit('SplashPage.build');
+          return result;
+        },
       ),
 
       // Onboarding route
       GoRoute(
         path: AppRoutes.onboarding,
         name: 'onboarding',
-        builder: (context, state) => const OnboardingPage(),
+        builder: (context, state) {
+          _trace.enter('OnboardingPage.build');
+          final result = const OnboardingPage();
+          _trace.exit('OnboardingPage.build');
+          return result;
+        },
       ),
 
       // Authentication routes
       GoRoute(
         path: AppRoutes.auth,
         name: 'auth',
-        builder: (context, state) => const AuthPage(),
+        builder: (context, state) {
+          _trace.enter('AuthPage.build');
+          final result = const AuthPage();
+          _trace.exit('AuthPage.build');
+          return result;
+        },
       ),
 
       // Main app shell with bottom navigation
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
-        builder: (context, state, child) => MainShell(child: child),
+        builder: (context, state, child) {
+          _trace.enter('MainShell.build');
+          final result = MainShell(child: child);
+          _trace.exit('MainShell.build');
+          return result;
+        },
         routes: [
           // Home tab
           GoRoute(
             path: AppRoutes.home,
             name: 'home',
-            pageBuilder: (context, state) => _buildPageWithTransition(
-              context,
-              state,
-              const HomePage(),
-            ),
+            pageBuilder: (context, state) {
+              _trace.enter('HomePage.pageBuilder');
+              _trace.exit('HomePage.pageBuilder');
+              return _buildPageWithTransition(
+                context,
+                state,
+                const HomePage(),
+              );
+            },
           ),
 
           // Missions tab
@@ -243,58 +276,103 @@ final routerProvider = Provider<GoRouter>((ref) {
 
     // Redirect logic based on authentication state
     redirect: (context, state) {
+      _trace.enter('GoRouter.redirect', {'path': state.matchedLocation});
+      
       final isAuthenticated = authState.status == AuthStatus.authenticated;
       final isLoading = authState.isLoading;
       final isOnAuthRoute = state.matchedLocation == AppRoutes.auth ||
           state.matchedLocation == AppRoutes.splash ||
           state.matchedLocation == AppRoutes.onboarding;
 
+      String? result;
       if (isLoading) {
-        return null;
+        _trace.debug('Redirect: isLoading=true, returning null');
+        result = null;
+      } else if (!isAuthenticated && !isOnAuthRoute) {
+        _trace.debug('Redirect: !authenticated && !onAuthRoute, going to auth');
+        result = AppRoutes.auth;
+      } else if (isAuthenticated && isOnAuthRoute) {
+        _trace.debug('Redirect: authenticated && onAuthRoute, going to home');
+        result = AppRoutes.home;
+      } else {
+        _trace.debug('Redirect: no redirect needed');
+        result = null;
       }
-
-      if (!isAuthenticated && !isOnAuthRoute) {
-        return AppRoutes.auth;
-      }
-
-      if (isAuthenticated && isOnAuthRoute) {
-        return AppRoutes.home;
-      }
-
-      return null;
+      
+      _trace.exit('GoRouter.redirect', result);
+      return result;
     },
 
     // Error handling
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red,
+    errorBuilder: (context, state) {
+      _trace.error('GoRouter error', state.error);
+      debugPrint('[ROUTER ERROR] Path: ${state.uri}');
+      debugPrint('[ROUTER ERROR] Error: ${state.error}');
+      debugPrint('[ROUTER ERROR] ErrorType: ${state.error?.runtimeType}');
+      return Scaffold(
+        backgroundColor: Colors.red.shade900,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  size: 80,
+                  color: Colors.white,
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'ROUTER ERROR',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 4,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Path: ${state.uri}',
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+                const SizedBox(height: 24),
+                if (state.error != null)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.black38,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    child: SingleChildScrollView(
+                      child: SelectableText(
+                        '${state.error}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontFamily: 'monospace',
+                        ),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => context.go(AppRoutes.home),
+                  child: const Text('Go Home'),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Page not found',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              state.uri.toString(),
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => context.go(AppRoutes.home),
-              child: const Text('Go Home'),
-            ),
-          ],
+          ),
         ),
-      ),
-    ),
+      );
+    },
   );
+  _trace.exit('GoRouter.new', router);
+  _trace.exit('routerProvider');
+  
+  return router;
 });
 
 /// Builds a page with holographic transition animation.

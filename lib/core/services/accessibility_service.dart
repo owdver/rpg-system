@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 /// Accessibility service for managing user preferences.
 class AccessibilityService {
@@ -11,23 +10,34 @@ class AccessibilityService {
 
   /// Whether reduced motion is preferred.
   bool get prefersReducedMotion {
-    return MediaQueryData.fromView(
-            View.of(WidgetsBinding.instance.rootElement!))
-        .disableAnimations;
+    try {
+      final binding = WidgetsBinding.instance;
+      // Use platformDispatcher directly - it's always available
+      // accessibleNavigation is a proxy for reduced motion check
+      return binding.platformDispatcher.accessibilityFeatures.accessibleNavigation;
+    } catch (_) {
+      return false;
+    }
   }
 
   /// Whether high contrast mode is preferred.
   bool get prefersHighContrast {
-    return MediaQueryData.fromView(
-            View.of(WidgetsBinding.instance.rootElement!))
-        .highContrast;
+    try {
+      final binding = WidgetsBinding.instance;
+      return binding.platformDispatcher.accessibilityFeatures.invertColors;
+    } catch (_) {
+      return false;
+    }
   }
 
   /// Whether bold text is preferred.
   bool get prefersBoldText {
-    return MediaQueryData.fromView(
-            View.of(WidgetsBinding.instance.rootElement!))
-        .boldText;
+    try {
+      final binding = WidgetsBinding.instance;
+      return binding.platformDispatcher.accessibilityFeatures.boldText;
+    } catch (_) {
+      return false;
+    }
   }
 
   /// Animation duration based on reduced motion preference.

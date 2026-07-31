@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.5.4
+  sdk: ^3.5.0
 
 dependencies:
   flutter:
@@ -37,7 +37,7 @@ dependencies:
   path: ^1.9.0
 
   # Health Integration
-  health: ^13.3.1
+  health: ^11.0.0
 
   # UI & Animation
   cupertino_icons: ^1.0.8
@@ -46,7 +46,7 @@ dependencies:
   vector_math: ^2.1.4
 
   # Utilities
-  intl: ^0.20.2
+  intl: ^0.19.0
   equatable: ^2.0.5
   uuid: ^4.4.0
   collection: ^1.18.0
