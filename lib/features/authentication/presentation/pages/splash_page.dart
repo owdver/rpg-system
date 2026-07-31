@@ -5,6 +5,10 @@ import '../../../../app/router.dart';
 import '../../../../app/providers/auth_provider.dart';
 import '../../../../core/constants/constants.dart';
 import '../../../../core/shared/widgets/holographic_container.dart';
+import '../../../../core/services/logger_service.dart';
+
+// Splash page trace logger
+final _trace = LoggerService.instance.getLogger('SplashPage');
 
 /// Splash screen with system boot animation.
 class SplashPage extends ConsumerStatefulWidget {
@@ -23,11 +27,15 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
   @override
   void initState() {
+    _trace.enter('SplashPage.initState');
     super.initState();
+    
+    _trace.enter('AnimationController.new');
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
+    _trace.exit('AnimationController.new');
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -51,38 +59,60 @@ class _SplashPageState extends ConsumerState<SplashPage>
     );
 
     _controller.forward();
+    _trace.enter('_initializeAndNavigate');
     _initializeAndNavigate();
+    _trace.exit('_initializeAndNavigate');
+    _trace.exit('SplashPage.initState');
   }
 
   Future<void> _initializeAndNavigate() async {
+    _trace.enter('_initializeAndNavigate');
+    
+    _trace.enter('authNotifierProvider.notifier.initialize');
     await ref.read(authNotifierProvider.notifier).initialize();
+    _trace.exit('authNotifierProvider.notifier.initialize');
 
     // Wait for animation to complete minimum display time
+    _trace.debug('Waiting for animation (1800ms)...');
     await Future.delayed(const Duration(milliseconds: 1800));
+    _trace.debug('Animation wait complete');
 
     if (mounted) {
+      _trace.enter('Reading auth state for navigation');
       final authState = ref.read(authNotifierProvider);
+      _trace.debug('Auth state: ${authState.status}');
+      
       if (authState.status == AuthStatus.authenticated) {
         if (authState.user?.onboardingCompleted ?? false) {
+          _trace.info('Navigating to home (onboarding complete)');
           context.go(AppRoutes.home);
         } else {
+          _trace.info('Navigating to onboarding');
           context.go(AppRoutes.onboarding);
         }
       } else {
+        _trace.info('Navigating to auth');
         context.go(AppRoutes.auth);
       }
+    } else {
+      _trace.warning('Widget unmounted, skipping navigation');
     }
+    _trace.exit('_initializeAndNavigate');
   }
 
   @override
   void dispose() {
+    _trace.enter('SplashPage.dispose');
     _controller.dispose();
     super.dispose();
+    _trace.exit('SplashPage.dispose');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    _trace.enter('SplashPage.build');
+    
+    final result = Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: AppColors.ambientBackground,
@@ -200,6 +230,9 @@ class _SplashPageState extends ConsumerState<SplashPage>
         ),
       ),
     );
+    
+    _trace.exit('SplashPage.build');
+    return result;
   }
 }
 

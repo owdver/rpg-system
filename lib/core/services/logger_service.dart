@@ -10,6 +10,8 @@ class LoggerService {
   static const _defaultLoggerName = 'RPGSystem';
 
   bool _initialized = false;
+  LogLevel _minimumLevel = LogLevel.debug;
+  bool _enableConsole = true;
 
   /// Initialize the logging system.
   void initialize({
@@ -19,7 +21,15 @@ class LoggerService {
   }) {
     if (_initialized) return;
     _initialized = true;
+    _minimumLevel = minimumLevel;
+    _enableConsole = enableConsole;
+    
+    // Immediately print initialization
+    _printLog(LogLevel.info, 'RPGSystem', 'LoggerService initialized', null, null);
   }
+
+  LogLevel get minimumLevel => _minimumLevel;
+  bool get enableConsole => _enableConsole;
 
   /// Get a logger instance for a specific component.
   Logger getLogger(String name) {
@@ -28,6 +38,24 @@ class LoggerService {
 
   /// Get the default logger.
   Logger get logger => getLogger(_defaultLoggerName);
+  
+  void _printLog(LogLevel level, String name, String message, Object? error, StackTrace? stackTrace) {
+    if (level.value < _minimumLevel.value) return;
+    
+    final timestamp = DateTime.now().toIso8601String().substring(11, 23);
+    final buffer = StringBuffer();
+    buffer.write('[$timestamp] [${level.name.toUpperCase()}] [$name] ');
+    buffer.write(message);
+    if (error != null) {
+      buffer.write(' | Error: $error');
+    }
+    if (stackTrace != null && level.value >= LogLevel.error.value) {
+      buffer.write('\n  StackTrace: $stackTrace');
+    }
+    
+    // Use debugPrint for console output
+    debugPrint(buffer.toString());
+  }
 }
 
 /// Application log levels.
@@ -83,7 +111,10 @@ class Logger {
 
   void _log(
       LogLevel level, Object? message, Object? error, StackTrace? stackTrace) {
-    final timestamp = DateTime.now();
+    // Check minimum level
+    if (level.value < LoggerService.instance.minimumLevel.value) return;
+    
+    final timestamp = DateTime.now().toIso8601String().substring(11, 23);
     final logMessage = message?.toString() ?? '';
     final errorMsg = error?.toString();
     final stackMsg = stackTrace?.toString();
@@ -92,7 +123,7 @@ class Logger {
     buffer.write('[$timestamp] [${level.name.toUpperCase()}] [$name] ');
     buffer.write(logMessage);
     if (errorMsg != null) {
-      buffer.write('\n  Error: $errorMsg');
+      buffer.write(' | Error: $errorMsg');
     }
     if (stackMsg != null && level.value >= LogLevel.error.value) {
       buffer.write('\n  StackTrace: $stackMsg');
