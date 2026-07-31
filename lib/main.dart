@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +11,10 @@ void main() {
     ),
   );
 }
+
+// ============================================================================
+// STAGE 5: HOLOGRAPHIC UI
+// ============================================================================
 
 /// Route paths
 abstract final class AppRoutes {
@@ -23,6 +28,61 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Simple counter provider for testing Riverpod
 final counterProvider = StateProvider<int>((ref) => 0);
+
+// ============================================================================
+// DESIGN TOKENS
+// ============================================================================
+
+abstract final class AppColors {
+  static const Color backgroundPrimary = Color(0xFF050816);
+  static const Color backgroundSecondary = Color(0xFF0B1428);
+  static const Color accentCyan = Color(0xFF54E6FF);
+  static const Color accentBlue = Color(0xFF3C7DFF);
+  static const Color accentViolet = Color(0xFF8C7DFF);
+  static const Color accentSuccess = Color(0xFF44E28A);
+  static const Color accentAmber = Color(0xFFFFB84D);
+  static const Color textPrimary = Color(0xFFF5FAFF);
+  static const Color textSecondary = Color(0xFF9FB2C8);
+  
+  static Color get surfaceGlass => const Color(0xFF0A1626).withOpacity(0.72);
+  static Color get surfaceGlassStrong => const Color(0xFF101F36).withOpacity(0.88);
+  static const LinearGradient glassOverlay = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0x33FFFFFF), Color(0x00FFFFFF)],
+  );
+}
+
+abstract final class AppSpacing {
+  static const double xs = 4.0;
+  static const double sm = 8.0;
+  static const double md = 12.0;
+  static const double lg = 16.0;
+  static const double xl = 20.0;
+  static const double xxl = 24.0;
+  static const double radiusMd = 12.0;
+}
+
+abstract final class AppBlur {
+  static const double strong = 24.0;
+}
+
+abstract final class AppAnimations {
+  static const Duration standard = Duration(milliseconds: 240);
+  static const Curve curveStandard = Curves.easeOutCubic;
+}
+
+// ============================================================================
+// ACCESSIBILITY SERVICE
+// ============================================================================
+
+class AccessibilityService {
+  static final AccessibilityService _instance = AccessibilityService._internal();
+  factory AccessibilityService() => _instance;
+  AccessibilityService._internal();
+  
+  bool get prefersReducedMotion => false; // Simplified for test
+}
 
 /// Auth status enum
 enum AuthStatus {
@@ -309,7 +369,147 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 }
 
-/// Home screen using Riverpod
+// ============================================================================
+// HOLOGRAPHIC CONTAINER WIDGET
+// ============================================================================
+
+class HolographicContainer extends StatefulWidget {
+  const HolographicContainer({
+    super.key,
+    required this.child,
+    this.width,
+    this.height,
+    this.borderRadius = AppSpacing.radiusMd,
+    this.glowColor = AppColors.accentCyan,
+    this.glowIntensity = 0.3,
+    this.blurAmount = AppBlur.strong,
+    this.borderWidth = 1.0,
+    this.animateGlow = true,
+  });
+
+  final Widget child;
+  final double? width;
+  final double? height;
+  final double borderRadius;
+  final Color glowColor;
+  final double glowIntensity;
+  final double blurAmount;
+  final double borderWidth;
+  final bool animateGlow;
+
+  @override
+  State<HolographicContainer> createState() => _HolographicContainerState();
+}
+
+class _HolographicContainerState extends State<HolographicContainer>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _glowAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    );
+
+    _glowAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    if (widget.animateGlow) {
+      _controller.repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final glowIntensity = widget.animateGlow
+            ? widget.glowIntensity * _glowAnimation.value
+            : widget.glowIntensity;
+
+        return Container(
+          width: widget.width,
+          height: widget.height,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            boxShadow: [
+              BoxShadow(
+                color: widget.glowColor.withOpacity(glowIntensity),
+                blurRadius: 24,
+                spreadRadius: 0,
+              ),
+              BoxShadow(
+                color: widget.glowColor.withOpacity(glowIntensity * 0.5),
+                blurRadius: 48,
+                spreadRadius: -8,
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            child: Stack(
+              children: [
+                BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: widget.blurAmount * 0.5,
+                    sigmaY: widget.blurAmount * 0.5,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.surfaceGlass,
+                          AppColors.surfaceGlassStrong,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(widget.borderRadius),
+                    gradient: AppColors.glassOverlay,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(widget.borderRadius),
+                    border: Border.all(
+                      color: widget.glowColor.withOpacity(0.45),
+                      width: widget.borderWidth,
+                    ),
+                  ),
+                ),
+                widget.child,
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ============================================================================
+// HOME SCREEN WITH HOLOGRAPHIC UI
+// ============================================================================
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -317,38 +517,233 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final count = ref.watch(counterProvider);
     final authState = ref.watch(authNotifierProvider);
-    
+
     return Scaffold(
-      body: Center(
+      backgroundColor: AppColors.backgroundPrimary,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.backgroundPrimary,
+              AppColors.backgroundSecondary,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'STAGE 5',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 4,
+                    color: AppColors.accentCyan,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Holographic UI',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xxl),
+                Center(
+                  child: HolographicContainer(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(AppSpacing.xl),
+                    glowColor: AppColors.accentCyan,
+                    child: Column(
+                      children: [
+                        const Text(
+                          'System Test',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'Welcome, ${authState.userName ?? "Agent"}!',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xxl),
+                        Text(
+                          '$count',
+                          style: const TextStyle(
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.accentCyan,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        const Text(
+                          'Operations Completed',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _ActionButton(
+                              icon: Icons.add,
+                              label: 'Increment',
+                              color: AppColors.accentSuccess,
+                              onPressed: () => ref.read(counterProvider.notifier).state++,
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                            _ActionButton(
+                              icon: Icons.remove,
+                              label: 'Decrement',
+                              color: AppColors.accentAmber,
+                              onPressed: () => ref.read(counterProvider.notifier).state--,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xxl),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _StatusCard(
+                        title: 'Status',
+                        value: 'Online',
+                        color: AppColors.accentSuccess,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: _StatusCard(
+                        title: 'Level',
+                        value: '05',
+                        color: AppColors.accentViolet,
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () async {
+                      await ref.read(authNotifierProvider.notifier).signOut();
+                      if (context.mounted) {
+                        context.go(AppRoutes.auth);
+                      }
+                    },
+                    child: const Text(
+                      'Sign Out',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return HolographicContainer(
+      glowColor: color,
+      glowIntensity: 0.2,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
+            child: Row(
+              children: [
+                Icon(icon, color: color, size: 20),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  label,
+                  style: TextStyle(color: color, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusCard extends StatelessWidget {
+  const _StatusCard({
+    required this.title,
+    required this.value,
+    required this.color,
+  });
+
+  final String title;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return HolographicContainer(
+      glowColor: color,
+      glowIntensity: 0.15,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Stage 4: Authentication',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const Text('System Test'),
-            const SizedBox(height: 8),
             Text(
-              'Welcome, ${authState.userName ?? "User"}!',
-              style: const TextStyle(fontSize: 14),
+              title,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
             ),
-            const SizedBox(height: 20),
-            Text('Counter: $count'),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => ref.read(counterProvider.notifier).state++,
-              child: const Text('Increment'),
-            ),
-            const SizedBox(height: 20),
-            TextButton(
-              onPressed: () async {
-                await ref.read(authNotifierProvider.notifier).signOut();
-                if (context.mounted) {
-                  context.go(AppRoutes.auth);
-                }
-              },
-              child: const Text('Sign Out'),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
           ],
         ),
@@ -380,7 +775,7 @@ final router = GoRouter(
   ],
 );
 
-/// Minimal system test app with GoRouter + Riverpod + Splash + Auth - Stage 4
+/// Minimal system test app with GoRouter + Riverpod + Splash + Auth + Holographic UI - Stage 5
 class SystemTestApp extends StatelessWidget {
   const SystemTestApp({super.key});
 
