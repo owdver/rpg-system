@@ -76,8 +76,8 @@ class _SplashPageState extends ConsumerState<SplashPage>
   Future<void> _initializeAndNavigate() async {
     _trace.enter('_initializeAndNavigate');
 
-    // CRITICAL: Check mounted status before any async operations
-    // This is the FIRST check because mounted might have changed since scheduling
+    // CRITICAL: Check mounted status before any async operations.
+    // FIRST check: mounted might have changed since scheduling.
     if (!mounted) {
       _trace.warning('_initializeAndNavigate: Widget not mounted, aborting');
       _trace.exit('_initializeAndNavigate');
@@ -97,7 +97,8 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
     // Check mounted again after async operation
     if (!mounted) {
-      _trace.warning('_initializeAndNavigate: Widget unmounted after init, aborting');
+      _trace.warning(
+          '_initializeAndNavigate: Widget unmounted after init, aborting');
       _trace.exit('_initializeAndNavigate');
       return;
     }
@@ -108,7 +109,8 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
     // Final mounted check before navigation
     if (!mounted) {
-      _trace.warning('_initializeAndNavigate: Widget unmounted after delay, aborting');
+      _trace.warning(
+          '_initializeAndNavigate: Widget unmounted after delay, aborting');
       _trace.exit('_initializeAndNavigate');
       return;
     }
