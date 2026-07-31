@@ -7,45 +7,44 @@ import 'package:go_router/go_router.dart';
 /// to identify where execution might stop or loop.
 
 void main() {
-  testWidgets('RPG System Startup Flow - Full Integration Test', 
-    (WidgetTester tester) async {
-    
+  testWidgets('RPG System Startup Flow - Full Integration Test',
+      (WidgetTester tester) async {
     final executionLog = <String>[];
-    
+
     void log(String step) {
       final timestamp = DateTime.now().toIso8601String().substring(11, 23);
       final msg = '[$timestamp] $step';
       executionLog.add(msg);
       debugPrint(msg);
     }
-    
+
     log('TEST START');
-    
+
     // Step 1: Simulate main() entry
     log('1. main() called');
-    
+
     // Step 2: Simulate WidgetsFlutterBinding.ensureInitialized
     log('2. WidgetsFlutterBinding.ensureInitialized');
     WidgetsFlutterBinding.ensureInitialized();
     log('2. COMPLETE');
-    
+
     // Step 3: Simulate runApp with ProviderScope
     log('3. runApp with ProviderScope');
-    
+
     await tester.pumpWidget(
       ProviderScope(
         child: TestApp(log: log),
       ),
     );
-    
+
     log('3. COMPLETE');
-    
+
     // Step 4: Wait for initial frame
     log('4. pump (waiting for initial frame)');
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
     log('4. COMPLETE');
-    
+
     // Step 5: Check if SplashPage is rendered
     log('5. Checking for SplashPage');
     final splashFinder = find.text('INITIALIZING...');
@@ -59,18 +58,18 @@ void main() {
         log('   Found Text widget: "${widget.data}"');
       }
     }
-    
+
     // Step 6: Wait for navigation (2000ms = animation + 1800ms wait)
     log('6. Waiting for navigation (2000ms)');
     await tester.pump(const Duration(milliseconds: 2000));
     await tester.pumpAndSettle();
     log('6. COMPLETE');
-    
+
     // Step 7: Check for AuthPage or HomePage
     log('7. Checking for target page');
     final authFinder = find.text('Sign In');
     final homeFinder = find.text('OPERATIVE');
-    
+
     if (authFinder.evaluate().isNotEmpty) {
       log('7. FOUND AuthPage - navigation works!');
     } else if (homeFinder.evaluate().isNotEmpty) {
@@ -80,18 +79,20 @@ void main() {
       // Dump all widgets on screen
       log('   Current widgets: ${_dumpWidgets(tester)}');
     }
-    
+
     // Print summary
     log('\\n=== STARTUP EXECUTION LOG ===');
     for (final entry in executionLog) {
       print(entry);
     }
     log('=== END LOG ===\\n');
-    
+
     // Assertions - verify we can find either the splash page OR the target page
     // (the splash page might navigate quickly)
     expect(
-      splashFinder.evaluate().isNotEmpty || authFinder.evaluate().isNotEmpty || homeFinder.evaluate().isNotEmpty,
+      splashFinder.evaluate().isNotEmpty ||
+          authFinder.evaluate().isNotEmpty ||
+          homeFinder.evaluate().isNotEmpty,
       true,
       reason: 'App should be rendering something',
     );
@@ -117,13 +118,13 @@ String _dumpWidgets(WidgetTester tester) {
 /// Test app that mirrors the RPG System app structure
 class TestApp extends StatelessWidget {
   final void Function(String) log;
-  
+
   const TestApp({super.key, required this.log});
 
   @override
   Widget build(BuildContext context) {
     log('TestApp.build');
-    
+
     return MaterialApp.router(
       title: 'System',
       debugShowCheckedModeBanner: false,
@@ -132,10 +133,10 @@ class TestApp extends StatelessWidget {
       routerConfig: _createRouter(),
     );
   }
-  
+
   GoRouter _createRouter() {
     log('_createRouter');
-    
+
     return GoRouter(
       initialLocation: '/splash',
       debugLogDiagnostics: true,
@@ -204,18 +205,18 @@ class _TestSplashPageState extends State<TestSplashPage> {
 
   Future<void> _initializeAndNavigate() async {
     log('_initializeAndNavigate START');
-    
+
     // Simulate auth check
     log('_initializeAndNavigate: checking auth...');
     await Future.delayed(const Duration(milliseconds: 100));
-    
+
     log('_initializeAndNavigate: navigating to /auth');
     if (mounted) {
       context.go('/auth');
     } else {
       log('_initializeAndNavigate: SKIPPED - not mounted');
     }
-    
+
     log('_initializeAndNavigate END');
   }
 
@@ -228,7 +229,7 @@ class _TestSplashPageState extends State<TestSplashPage> {
   @override
   Widget build(BuildContext context) {
     log('TestSplashPage.build START');
-    
+
     final result = Scaffold(
       body: Container(
         color: const Color(0xFF050816),
@@ -236,7 +237,8 @@ class _TestSplashPageState extends State<TestSplashPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.psychology_outlined, size: 64, color: Color(0xFF00BCD4)),
+              const Icon(Icons.psychology_outlined,
+                  size: 64, color: Color(0xFF00BCD4)),
               const SizedBox(height: 20),
               const Text(
                 'SYSTEM',
@@ -264,7 +266,7 @@ class _TestSplashPageState extends State<TestSplashPage> {
         ),
       ),
     );
-    
+
     log('TestSplashPage.build END');
     return result;
   }

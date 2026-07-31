@@ -14,7 +14,8 @@ class AccessibilityService {
       final binding = WidgetsBinding.instance;
       // Use platformDispatcher directly - it's always available
       // accessibleNavigation is a proxy for reduced motion check
-      return binding.platformDispatcher.accessibilityFeatures.accessibleNavigation;
+      return binding
+          .platformDispatcher.accessibilityFeatures.accessibleNavigation;
     } catch (_) {
       return false;
     }

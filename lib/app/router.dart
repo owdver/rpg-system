@@ -53,7 +53,7 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 /// The application router configuration.
 final routerProvider = Provider<GoRouter>((ref) {
   _trace.enter('routerProvider');
-  
+
   _trace.enter('authNotifierProvider.watch');
   final authState = ref.watch(authNotifierProvider);
   _trace.exit('authNotifierProvider.watch', authState.status);
@@ -277,7 +277,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     // Redirect logic based on authentication state
     redirect: (context, state) {
       _trace.enter('GoRouter.redirect', {'path': state.matchedLocation});
-      
+
       final isAuthenticated = authState.status == AuthStatus.authenticated;
       final isLoading = authState.isLoading;
       final isOnAuthRoute = state.matchedLocation == AppRoutes.auth ||
@@ -298,7 +298,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         _trace.debug('Redirect: no redirect needed');
         result = null;
       }
-      
+
       _trace.exit('GoRouter.redirect', result);
       return result;
     },
@@ -371,7 +371,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
   _trace.exit('GoRouter.new', router);
   _trace.exit('routerProvider');
-  
+
   return router;
 });
 

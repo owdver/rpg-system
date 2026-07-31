@@ -23,9 +23,10 @@ class LoggerService {
     _initialized = true;
     _minimumLevel = minimumLevel;
     _enableConsole = enableConsole;
-    
+
     // Immediately print initialization
-    _printLog(LogLevel.info, 'RPGSystem', 'LoggerService initialized', null, null);
+    _printLog(
+        LogLevel.info, 'RPGSystem', 'LoggerService initialized', null, null);
   }
 
   LogLevel get minimumLevel => _minimumLevel;
@@ -38,10 +39,11 @@ class LoggerService {
 
   /// Get the default logger.
   Logger get logger => getLogger(_defaultLoggerName);
-  
-  void _printLog(LogLevel level, String name, String message, Object? error, StackTrace? stackTrace) {
+
+  void _printLog(LogLevel level, String name, String message, Object? error,
+      StackTrace? stackTrace) {
     if (level.value < _minimumLevel.value) return;
-    
+
     final timestamp = DateTime.now().toIso8601String().substring(11, 23);
     final buffer = StringBuffer();
     buffer.write('[$timestamp] [${level.name.toUpperCase()}] [$name] ');
@@ -52,7 +54,7 @@ class LoggerService {
     if (stackTrace != null && level.value >= LogLevel.error.value) {
       buffer.write('\n  StackTrace: $stackTrace');
     }
-    
+
     // Use debugPrint for console output
     debugPrint(buffer.toString());
   }
@@ -113,7 +115,7 @@ class Logger {
       LogLevel level, Object? message, Object? error, StackTrace? stackTrace) {
     // Check minimum level
     if (level.value < LoggerService.instance.minimumLevel.value) return;
-    
+
     final timestamp = DateTime.now().toIso8601String().substring(11, 23);
     final logMessage = message?.toString() ?? '';
     final errorMsg = error?.toString();

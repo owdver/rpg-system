@@ -134,7 +134,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     String password,
     String displayName,
   ) async {
-    _trace.enter('AuthNotifier.signUpWithEmail', {'email': email, 'displayName': displayName});
+    _trace.enter('AuthNotifier.signUpWithEmail',
+        {'email': email, 'displayName': displayName});
     state = state.copyWith(isLoading: true, error: null);
 
     try {
