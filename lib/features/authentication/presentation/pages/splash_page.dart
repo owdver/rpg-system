@@ -59,43 +59,78 @@ class _SplashPageState extends ConsumerState<SplashPage>
     );
 
     _controller.forward();
-    _trace.enter('_initializeAndNavigate');
-    _initializeAndNavigate();
-    _trace.exit('_initializeAndNavigate');
+
+    // Defer initialization until after the first frame renders.
+    // This ensures the widget tree is fully built and providers are initialized
+    // before we read auth state. Without this deferral, ref.read() during
+    // initState may access providers before they're fully set up.
+    _trace.enter('_initializeAndNavigate (scheduled)');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _trace.enter('_initializeAndNavigate (executed)');
+      _initializeAndNavigate();
+      _trace.exit('_initializeAndNavigate (executed)');
+    });
     _trace.exit('SplashPage.initState');
   }
 
   Future<void> _initializeAndNavigate() async {
     _trace.enter('_initializeAndNavigate');
 
+    // Safety check: ensure widget is still mounted before proceeding.
+    // This guards against the widget being unmounted while awaiting.
+    if (!mounted) {
+      _trace.warning('_initializeAndNavigate: Widget not mounted, aborting');
+      _trace.exit('_initializeAndNavigate');
+      return;
+    }
+    _trace.debug('Widget is mounted, proceeding with initialization');
+
     _trace.enter('authNotifierProvider.notifier.initialize');
-    await ref.read(authNotifierProvider.notifier).initialize();
-    _trace.exit('authNotifierProvider.notifier.initialize');
+    try {
+      await ref.read(authNotifierProvider.notifier).initialize();
+      _trace.exit('authNotifierProvider.notifier.initialize');
+    } catch (e, st) {
+      _trace.failOperation('authNotifierProvider.notifier.initialize', e, st);
+      _trace.exit('_initializeAndNavigate');
+      return;
+    }
+
+    // Check if widget was unmounted during initialization
+    if (!mounted) {
+      _trace.warning(
+          '_initializeAndNavigate: Widget unmounted after init, aborting');
+      _trace.exit('_initializeAndNavigate');
+      return;
+    }
 
     // Wait for animation to complete minimum display time
     _trace.debug('Waiting for animation (1800ms)...');
     await Future.delayed(const Duration(milliseconds: 1800));
+
+    // Check if widget was unmounted during animation delay
+    if (!mounted) {
+      _trace.warning(
+          '_initializeAndNavigate: Widget unmounted after delay, aborting');
+      _trace.exit('_initializeAndNavigate');
+      return;
+    }
     _trace.debug('Animation wait complete');
 
-    if (mounted) {
-      _trace.enter('Reading auth state for navigation');
-      final authState = ref.read(authNotifierProvider);
-      _trace.debug('Auth state: ${authState.status}');
+    _trace.enter('Reading auth state for navigation');
+    final authState = ref.read(authNotifierProvider);
+    _trace.debug('Auth state: ${authState.status}');
 
-      if (authState.status == AuthStatus.authenticated) {
-        if (authState.user?.onboardingCompleted ?? false) {
-          _trace.info('Navigating to home (onboarding complete)');
-          context.go(AppRoutes.home);
-        } else {
-          _trace.info('Navigating to onboarding');
-          context.go(AppRoutes.onboarding);
-        }
+    if (authState.status == AuthStatus.authenticated) {
+      if (authState.user?.onboardingCompleted ?? false) {
+        _trace.info('Navigating to home (onboarding complete)');
+        context.go(AppRoutes.home);
       } else {
-        _trace.info('Navigating to auth');
-        context.go(AppRoutes.auth);
+        _trace.info('Navigating to onboarding');
+        context.go(AppRoutes.onboarding);
       }
     } else {
-      _trace.warning('Widget unmounted, skipping navigation');
+      _trace.info('Navigating to auth');
+      context.go(AppRoutes.auth);
     }
     _trace.exit('_initializeAndNavigate');
   }
