@@ -34,7 +34,12 @@ final counterProvider = StateProvider<int>((ref) => 0);
 // ============================================================================
 
 /// XP source enum
-enum XPSource { workoutCompletion, missionCompletion, achievementUnlock, dailyBonus }
+enum XPSource {
+  workoutCompletion,
+  missionCompletion,
+  achievementUnlock,
+  dailyBonus
+}
 
 /// User stats model
 class UserStats {
@@ -129,8 +134,14 @@ class GameEngineNotifier extends StateNotifier<GameState> {
     // Simulate loading
     Future.delayed(const Duration(milliseconds: 500), () {
       state = const GameState(
-        xpState: XPState(totalXP: 1250, level: 5, currentLevelXP: 50, xpToNextLevel: 100, streakDays: 3),
-        userStats: UserStats(strength: 15, endurance: 12, agility: 18, intelligence: 14),
+        xpState: XPState(
+            totalXP: 1250,
+            level: 5,
+            currentLevelXP: 50,
+            xpToNextLevel: 100,
+            streakDays: 3),
+        userStats: UserStats(
+            strength: 15, endurance: 12, agility: 18, intelligence: 14),
         missionCount: 12,
         achievementCount: 8,
         isLoading: false,
@@ -171,7 +182,8 @@ class GameEngineNotifier extends StateNotifier<GameState> {
 }
 
 /// Game engine provider
-final gameEngineProvider = StateNotifierProvider<GameEngineNotifier, GameState>((ref) {
+final gameEngineProvider =
+    StateNotifierProvider<GameEngineNotifier, GameState>((ref) {
   return GameEngineNotifier();
 });
 
@@ -199,9 +211,10 @@ abstract final class AppColors {
   static const Color accentAmber = Color(0xFFFFB84D);
   static const Color textPrimary = Color(0xFFF5FAFF);
   static const Color textSecondary = Color(0xFF9FB2C8);
-  
+
   static Color get surfaceGlass => const Color(0xFF0A1626).withOpacity(0.72);
-  static Color get surfaceGlassStrong => const Color(0xFF101F36).withOpacity(0.88);
+  static Color get surfaceGlassStrong =>
+      const Color(0xFF101F36).withOpacity(0.88);
   static const LinearGradient glassOverlay = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
@@ -233,10 +246,11 @@ abstract final class AppAnimations {
 // ============================================================================
 
 class AccessibilityService {
-  static final AccessibilityService _instance = AccessibilityService._internal();
+  static final AccessibilityService _instance =
+      AccessibilityService._internal();
   factory AccessibilityService() => _instance;
   AccessibilityService._internal();
-  
+
   bool get prefersReducedMotion => false; // Simplified for test
 }
 
@@ -293,7 +307,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<bool> signIn(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
     await Future.delayed(const Duration(seconds: 1));
-    
+
     // Simple validation for testing
     if (email.isNotEmpty && password.length >= 4) {
       state = AuthState(
@@ -463,10 +477,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _initializeAndNavigate() async {
     // Initialize auth
     await ref.read(authNotifierProvider.notifier).checkAuthStatus();
-    
+
     // Additional splash delay
     await Future.delayed(const Duration(seconds: 1));
-    
+
     if (mounted) {
       final authState = ref.read(authNotifierProvider);
       if (authState.status == AuthStatus.authenticated) {
@@ -714,7 +728,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xxl),
-                
+
                 // XP Progress Card
                 HolographicContainer(
                   glowColor: AppColors.accentViolet,
@@ -749,7 +763,8 @@ class HomeScreen extends ConsumerWidget {
                           child: LinearProgressIndicator(
                             value: xpState.levelProgress,
                             backgroundColor: AppColors.backgroundSecondary,
-                            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentViolet),
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                                AppColors.accentViolet),
                             minHeight: 8,
                           ),
                         ),
@@ -765,24 +780,40 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: AppSpacing.lg),
-                
+
                 // Stats Grid
                 Row(
                   children: [
-                    Expanded(child: _StatCard(title: 'STR', value: userStats.strength, color: AppColors.accentSuccess)),
+                    Expanded(
+                        child: _StatCard(
+                            title: 'STR',
+                            value: userStats.strength,
+                            color: AppColors.accentSuccess)),
                     const SizedBox(width: AppSpacing.sm),
-                    Expanded(child: _StatCard(title: 'END', value: userStats.endurance, color: AppColors.accentAmber)),
+                    Expanded(
+                        child: _StatCard(
+                            title: 'END',
+                            value: userStats.endurance,
+                            color: AppColors.accentAmber)),
                     const SizedBox(width: AppSpacing.sm),
-                    Expanded(child: _StatCard(title: 'AGI', value: userStats.agility, color: AppColors.accentCyan)),
+                    Expanded(
+                        child: _StatCard(
+                            title: 'AGI',
+                            value: userStats.agility,
+                            color: AppColors.accentCyan)),
                     const SizedBox(width: AppSpacing.sm),
-                    Expanded(child: _StatCard(title: 'INT', value: userStats.intelligence, color: AppColors.accentViolet)),
+                    Expanded(
+                        child: _StatCard(
+                            title: 'INT',
+                            value: userStats.intelligence,
+                            color: AppColors.accentViolet)),
                   ],
                 ),
-                
+
                 const SizedBox(height: AppSpacing.xxl),
-                
+
                 // Game Actions
                 Center(
                   child: HolographicContainer(
@@ -835,7 +866,9 @@ class HomeScreen extends ConsumerWidget {
                                 color: AppColors.accentSuccess,
                                 onPressed: () {
                                   ref.read(counterProvider.notifier).state++;
-                                  ref.read(gameEngineProvider.notifier).completeWorkout(25);
+                                  ref
+                                      .read(gameEngineProvider.notifier)
+                                      .completeWorkout(25);
                                 },
                               ),
                               const SizedBox(width: AppSpacing.md),
@@ -843,7 +876,9 @@ class HomeScreen extends ConsumerWidget {
                                 icon: Icons.refresh,
                                 label: 'Reset',
                                 color: AppColors.accentAmber,
-                                onPressed: () => ref.read(counterProvider.notifier).state = 0,
+                                onPressed: () => ref
+                                    .read(counterProvider.notifier)
+                                    .state = 0,
                               ),
                             ],
                           ),
@@ -852,14 +887,15 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: AppSpacing.xxl),
-                
+
                 // Streak Info
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.local_fire_department, color: AppColors.accentAmber, size: 20),
+                    const Icon(Icons.local_fire_department,
+                        color: AppColors.accentAmber, size: 20),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
                       '${xpState.streakDays} Day Streak!',
@@ -871,9 +907,9 @@ class HomeScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                
+
                 const Spacer(),
-                
+
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
@@ -915,7 +951,8 @@ class _StatCard extends StatelessWidget {
       glowColor: color,
       glowIntensity: 0.15,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
+        padding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.md, horizontal: AppSpacing.sm),
         child: Column(
           children: [
             Text(
