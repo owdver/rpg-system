@@ -15,6 +15,7 @@ void main() {
 abstract final class AppRoutes {
   static const home = '/home';
   static const splash = '/splash';
+  static const auth = '/auth';
 }
 
 /// Navigation keys
@@ -22,6 +23,172 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Simple counter provider for testing Riverpod
 final counterProvider = StateProvider<int>((ref) => 0);
+
+/// Auth status enum
+enum AuthStatus {
+  unknown,
+  authenticated,
+  unauthenticated,
+}
+
+/// Auth state
+class AuthState {
+  const AuthState({
+    this.status = AuthStatus.unknown,
+    this.userName,
+    this.error,
+    this.isLoading = false,
+  });
+
+  final AuthStatus status;
+  final String? userName;
+  final String? error;
+  final bool isLoading;
+}
+
+/// Auth notifier for managing authentication state
+class AuthNotifier extends StateNotifier<AuthState> {
+  AuthNotifier() : super(const AuthState()) {
+    // Auto-initialize
+    Future.microtask(() => checkAuthStatus());
+  }
+
+  Future<void> checkAuthStatus() async {
+    state = state.copyWith(isLoading: true);
+    await Future.delayed(const Duration(milliseconds: 500));
+    // For testing: assume not authenticated
+    state = const AuthState(status: AuthStatus.unauthenticated);
+  }
+
+  Future<bool> signIn(String email, String password) async {
+    state = state.copyWith(isLoading: true, error: null);
+    await Future.delayed(const Duration(seconds: 1));
+    
+    // Simple validation for testing
+    if (email.isNotEmpty && password.length >= 4) {
+      state = AuthState(
+        status: AuthStatus.authenticated,
+        userName: email.split('@').first,
+      );
+      return true;
+    } else {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Invalid email or password',
+      );
+      return false;
+    }
+  }
+
+  Future<void> signOut() async {
+    state = state.copyWith(isLoading: true);
+    await Future.delayed(const Duration(milliseconds: 500));
+    state = const AuthState(status: AuthStatus.unauthenticated);
+  }
+}
+
+/// Auth provider
+final authNotifierProvider =
+    StateNotifierProvider<AuthNotifier, AuthState>((ref) {
+  return AuthNotifier();
+});
+
+/// Auth page
+class AuthPage extends ConsumerStatefulWidget {
+  const AuthPage({super.key});
+
+  @override
+  ConsumerState<AuthPage> createState() => _AuthPageState();
+}
+
+class _AuthPageState extends ConsumerState<AuthPage> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authState = ref.watch(authNotifierProvider);
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'STAGE 4',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 4,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Authentication',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 32),
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true,
+              ),
+              if (authState.error != null) ...[
+                const SizedBox(height: 16),
+                Text(
+                  authState.error!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ],
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: authState.isLoading
+                      ? null
+                      : () async {
+                          final success = await ref
+                              .read(authNotifierProvider.notifier)
+                              .signIn(
+                                _emailController.text,
+                                _passwordController.text,
+                              );
+                          if (success && context.mounted) {
+                            context.go(AppRoutes.home);
+                          }
+                        },
+                  child: authState.isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('Sign In'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 /// Splash screen with initialization
 class SplashScreen extends ConsumerStatefulWidget {
@@ -64,10 +231,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   Future<void> _initializeAndNavigate() async {
-    // Simulate initialization delay
-    await Future.delayed(const Duration(seconds: 2));
+    // Initialize auth
+    await ref.read(authNotifierProvider.notifier).checkAuthStatus();
+    
+    // Additional splash delay
+    await Future.delayed(const Duration(seconds: 1));
+    
     if (mounted) {
-      context.go(AppRoutes.home);
+      final authState = ref.read(authNotifierProvider);
+      if (authState.status == AuthStatus.authenticated) {
+        context.go(AppRoutes.home);
+      } else {
+        context.go(AppRoutes.auth);
+      }
     }
   }
 
@@ -92,7 +268,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      'STAGE 3',
+                      'STAGE 4',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -101,7 +277,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Splash Page',
+                      'Splash Page + Auth',
                       style: TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 32),
@@ -126,16 +302,23 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final count = ref.watch(counterProvider);
+    final authState = ref.watch(authNotifierProvider);
+    
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Stage 3: Splash Page',
+              'Stage 4: Authentication',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const Text('System Test'),
+            const SizedBox(height: 8),
+            Text(
+              'Welcome, ${authState.userName ?? "User"}!',
+              style: const TextStyle(fontSize: 14),
+            ),
             const SizedBox(height: 20),
             Text('Counter: $count'),
             const SizedBox(height: 10),
@@ -145,8 +328,13 @@ class HomeScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
             TextButton(
-              onPressed: () => context.go(AppRoutes.splash),
-              child: const Text('Go to Splash'),
+              onPressed: () async {
+                await ref.read(authNotifierProvider.notifier).signOut();
+                if (context.mounted) {
+                  context.go(AppRoutes.auth);
+                }
+              },
+              child: const Text('Sign Out'),
             ),
           ],
         ),
@@ -166,6 +354,11 @@ final router = GoRouter(
       builder: (context, state) => const SplashScreen(),
     ),
     GoRoute(
+      path: AppRoutes.auth,
+      name: 'auth',
+      builder: (context, state) => const AuthPage(),
+    ),
+    GoRoute(
       path: AppRoutes.home,
       name: 'home',
       builder: (context, state) => const HomeScreen(),
@@ -173,7 +366,7 @@ final router = GoRouter(
   ],
 );
 
-/// Minimal system test app with GoRouter + Riverpod + Splash - Stage 3
+/// Minimal system test app with GoRouter + Riverpod + Splash + Auth - Stage 4
 class SystemTestApp extends StatelessWidget {
   const SystemTestApp({super.key});
 
