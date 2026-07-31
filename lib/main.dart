@@ -23,7 +23,7 @@ void _logError(String msg) {
 // Install global error handlers
 void _installErrorHandlers() {
   debugPrint('[STARTUP] Installing global error handlers...');
-  
+
   // FlutterError handler - catches Flutter framework errors
   FlutterError.onError = (FlutterErrorDetails details) {
     final msg = 'FlutterError: ${details.exceptionAsString()}\n'
@@ -33,21 +33,21 @@ void _installErrorHandlers() {
     debugPrint('[STARTUP] FlutterError caught: $msg');
     FlutterError.presentError(details);
   };
-  
+
   // PlatformDispatcher onError - catches platform-level errors
   // Note: In Flutter 3.24, we use the binding's error handler
   // PlatformDispatcher.instance.onError is not directly accessible this way
   // Instead we rely on FlutterError.onError
-  
+
   debugPrint('[STARTUP] Error handlers installed');
 }
 
 void main() async {
   // Install global error handlers FIRST
   _installErrorHandlers();
-  
+
   _trace.startOperation('MAIN_ENTRY');
-  
+
   _trace.enter('WidgetsFlutterBinding.ensureInitialized');
   try {
     WidgetsFlutterBinding.ensureInitialized();
@@ -101,7 +101,7 @@ void main() async {
     ),
   );
   _trace.exit('runApp');
-  
+
   _trace.completeOperation('MAIN_ENTRY');
 }
 
@@ -109,7 +109,7 @@ void main() async {
 Widget _errorBuilder(Widget child, FlutterError error) {
   debugPrint('[ERROR WIDGET] Showing error');
   debugPrint('[ERROR WIDGET] Message: ${error.message}');
-  
+
   return MaterialApp(
     debugShowCheckedModeBanner: false,
     home: Scaffold(
@@ -124,7 +124,10 @@ Widget _errorBuilder(Widget child, FlutterError error) {
               const SizedBox(height: 24),
               const Text(
                 'RENDERING ERROR',
-                style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Container(
@@ -139,12 +142,18 @@ Widget _errorBuilder(Widget child, FlutterError error) {
                     children: [
                       const Text(
                         'Message:',
-                        style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         error.message,
-                        style: const TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'monospace'),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'monospace'),
                       ),
                     ],
                   ),
@@ -170,7 +179,7 @@ class RpgSystemApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     _trace.enter('RpgSystemApp.build');
-    
+
     _trace.enter('routerProvider.watch');
     final router = ref.watch(routerProvider);
     _trace.exit('routerProvider.watch', router);
@@ -208,7 +217,7 @@ class RpgSystemApp extends ConsumerWidget {
     );
     _trace.exit('MaterialApp.router.build');
     _trace.exit('RpgSystemApp.build');
-    
+
     return result;
   }
 }

@@ -29,7 +29,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
   void initState() {
     _trace.enter('SplashPage.initState');
     super.initState();
-    
+
     _trace.enter('AnimationController.new');
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1200),
@@ -67,7 +67,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
   Future<void> _initializeAndNavigate() async {
     _trace.enter('_initializeAndNavigate');
-    
+
     _trace.enter('authNotifierProvider.notifier.initialize');
     await ref.read(authNotifierProvider.notifier).initialize();
     _trace.exit('authNotifierProvider.notifier.initialize');
@@ -81,7 +81,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
       _trace.enter('Reading auth state for navigation');
       final authState = ref.read(authNotifierProvider);
       _trace.debug('Auth state: ${authState.status}');
-      
+
       if (authState.status == AuthStatus.authenticated) {
         if (authState.user?.onboardingCompleted ?? false) {
           _trace.info('Navigating to home (onboarding complete)');
@@ -111,7 +111,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
   @override
   Widget build(BuildContext context) {
     _trace.enter('SplashPage.build');
-    
+
     final result = Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -230,7 +230,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
         ),
       ),
     );
-    
+
     _trace.exit('SplashPage.build');
     return result;
   }
