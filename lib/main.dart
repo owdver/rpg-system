@@ -44,6 +44,20 @@ class AuthState {
   final String? userName;
   final String? error;
   final bool isLoading;
+
+  AuthState copyWith({
+    AuthStatus? status,
+    String? userName,
+    String? error,
+    bool? isLoading,
+  }) {
+    return AuthState(
+      status: status ?? this.status,
+      userName: userName ?? this.userName,
+      error: error,
+      isLoading: isLoading ?? this.isLoading,
+    );
+  }
 }
 
 /// Auth notifier for managing authentication state
