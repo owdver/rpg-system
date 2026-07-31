@@ -558,63 +558,65 @@ class HomeScreen extends ConsumerWidget {
                 Center(
                   child: HolographicContainer(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(AppSpacing.xl),
                     glowColor: AppColors.accentCyan,
-                    child: Column(
-                      children: [
-                        const Text(
-                          'System Test',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        Text(
-                          'Welcome, ${authState.userName ?? "Agent"}!',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.xxl),
-                        Text(
-                          '$count',
-                          style: const TextStyle(
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.accentCyan,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        const Text(
-                          'Operations Completed',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _ActionButton(
-                              icon: Icons.add,
-                              label: 'Increment',
-                              color: AppColors.accentSuccess,
-                              onPressed: () => ref.read(counterProvider.notifier).state++,
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'System Test',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
                             ),
-                            const SizedBox(width: AppSpacing.md),
-                            _ActionButton(
-                              icon: Icons.remove,
-                              label: 'Decrement',
-                              color: AppColors.accentAmber,
-                              onPressed: () => ref.read(counterProvider.notifier).state--,
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Text(
+                            'Welcome, ${authState.userName ?? "Agent"}!',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          const SizedBox(height: AppSpacing.xxl),
+                          Text(
+                            '$count',
+                            style: const TextStyle(
+                              fontSize: 48,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.accentCyan,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          const Text(
+                            'Operations Completed',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.xl),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _ActionButton(
+                                icon: Icons.add,
+                                label: 'Increment',
+                                color: AppColors.accentSuccess,
+                                onPressed: () => ref.read(counterProvider.notifier).state++,
+                              ),
+                              const SizedBox(width: AppSpacing.md),
+                              _ActionButton(
+                                icon: Icons.remove,
+                                label: 'Decrement',
+                                color: AppColors.accentAmber,
+                                onPressed: () => ref.read(counterProvider.notifier).state--,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
