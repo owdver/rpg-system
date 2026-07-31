@@ -112,7 +112,7 @@ This report documents a comprehensive audit of all runtime configuration and env
 
 ## Root Cause Analysis: Gray Screen Issue
 
-The gray screen issue was **NOT caused by missing configuration**. It was caused by a **Flutter State lifecycle timing bug**.
+The gray screen issue was **NOT caused by missing configuration**. It was caused by a **Riverpod provider initialization timing issue**.
 
 ### Problem
 
@@ -121,20 +121,21 @@ The gray screen issue was **NOT caused by missing configuration**. It was caused
 @override
 void initState() {
   super.initState();
-  _initializeAndNavigate();  // Called directly - BUG!
+  _initializeAndNavigate();  // Called directly during initState
 }
 
 Future<void> _initializeAndNavigate() async {
   // ...
-  if (mounted) {  // BUG: mounted is FALSE here!
-    context.go(AppRoutes.auth);  // This was SKIPPED!
-  }
+  await ref.read(authNotifierProvider.notifier).initialize();
+  // ref.read() called before widget tree is fully built
 }
 ```
 
 ### Why It Happened
 
-In Flutter's `State` class, the `mounted` flag is set to `true` **AFTER** `initState()` completes. When `_initializeAndNavigate()` was called directly from `initState()`, the `mounted` flag was still `false`, causing the navigation check to fail silently.
+When `_initializeAndNavigate()` was called directly from `initState()`, the `ref.read()` for the auth provider executed before the widget tree was fully built and providers were fully initialized. This could cause the provider to return stale or incomplete state.
+
+**Note**: The `mounted` flag is actually `true` during `initState()` execution (contrary to common misconception). The issue was provider timing, not `mounted` timing.
 
 ### Fix Applied
 
@@ -143,18 +144,26 @@ In Flutter's `State` class, the `mounted` flag is set to `true` **AFTER** `initS
 @override
 void initState() {
   super.initState();
-  // Defer to next frame when mounted will be true
+  // Defer to next frame - ensures widget tree and providers are ready
   WidgetsBinding.instance.addPostFrameCallback((_) {
     _initializeAndNavigate();
   });
 }
 
 Future<void> _initializeAndNavigate() async {
-  // NOW mounted is guaranteed to be true
   if (!mounted) return;  // Safety check
+  
+  await ref.read(authNotifierProvider.notifier).initialize();
+  // NOW providers are fully initialized
+  
   // ... proceed with navigation
 }
 ```
+
+The `addPostFrameCallback` defers execution until after the first frame renders, ensuring:
+1. The widget tree is fully built
+2. All Riverpod providers are fully initialized
+3. GoRouter has completed its initial configuration
 
 ---
 
