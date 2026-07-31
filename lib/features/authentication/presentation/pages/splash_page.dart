@@ -60,10 +60,10 @@ class _SplashPageState extends ConsumerState<SplashPage>
 
     _controller.forward();
 
-    // IMPORTANT: Defer initialization until after the widget is fully mounted.
-    // During initState(), the 'mounted' flag is still false, so any navigation
-    // check using 'mounted' would incorrectly skip navigation.
-    // Using addPostFrameCallback ensures initState() completes first.
+    // Defer initialization until after the first frame renders.
+    // This ensures the widget tree is fully built and providers are initialized
+    // before we read auth state. Without this deferral, ref.read() during
+    // initState may access providers before they're fully set up.
     _trace.enter('_initializeAndNavigate (scheduled)');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _trace.enter('_initializeAndNavigate (executed)');
@@ -76,8 +76,8 @@ class _SplashPageState extends ConsumerState<SplashPage>
   Future<void> _initializeAndNavigate() async {
     _trace.enter('_initializeAndNavigate');
 
-    // CRITICAL: Check mounted status before any async operations.
-    // FIRST check: mounted might have changed since scheduling.
+    // Safety check: ensure widget is still mounted before proceeding.
+    // This guards against the widget being unmounted while awaiting.
     if (!mounted) {
       _trace.warning('_initializeAndNavigate: Widget not mounted, aborting');
       _trace.exit('_initializeAndNavigate');
@@ -95,7 +95,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
       return;
     }
 
-    // Check mounted again after async operation
+    // Check if widget was unmounted during initialization
     if (!mounted) {
       _trace.warning(
           '_initializeAndNavigate: Widget unmounted after init, aborting');
@@ -107,7 +107,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
     _trace.debug('Waiting for animation (1800ms)...');
     await Future.delayed(const Duration(milliseconds: 1800));
 
-    // Final mounted check before navigation
+    // Check if widget was unmounted during animation delay
     if (!mounted) {
       _trace.warning(
           '_initializeAndNavigate: Widget unmounted after delay, aborting');
